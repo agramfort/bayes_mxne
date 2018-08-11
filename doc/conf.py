@@ -12,9 +12,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
+import os
+import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import sphinx_gallery
+import sphinx_bootstrap_theme
 
 
 # -- Project information -----------------------------------------------------
@@ -39,6 +41,7 @@ release = ''
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx_gallery.gen_gallery'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -74,18 +77,25 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'bootstrap'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'navbar_sidebarrel': False,
+    'navbar_links': [
+        ("Examples", "auto_examples/index"),
+        ("GitHub", "https://github.com/yousrabk/bayes_meeg", True)
+    ],
+    'bootswatch_theme': "united"
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -153,3 +163,10 @@ texinfo_documents = [
      author, 'bayes_meeg', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs': '../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs': 'auto_examples',
+}
