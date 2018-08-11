@@ -5,6 +5,10 @@ Plot demo
 
 Plot demo.
 """
+# Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+
+# License: BSD (3-clause)
 
 import numpy as np
 from scipy import linalg

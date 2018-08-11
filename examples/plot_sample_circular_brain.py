@@ -7,6 +7,10 @@ This example demonstrates how to run a MM solver using K different
 MCMC initilization. Plot then on a circular plot all the configurations
 of the source localization.
 """
+# Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+
+# License: BSD (3-clause)
 
 from copy import deepcopy
 import numpy as np
