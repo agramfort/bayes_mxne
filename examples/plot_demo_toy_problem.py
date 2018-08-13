@@ -1,9 +1,10 @@
 """
-=========
-Plot demo
-=========
+=====================================
+Plot a demonstration on a toy problem
+=====================================
 
-Plot demo.
+This example demonstrates the difficulty of recovery of a source
+which has stronger correlation between the columns of G (sources).
 """
 # Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>

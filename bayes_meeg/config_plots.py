@@ -85,7 +85,7 @@ def circular_brain_plot(forward, solution_support, stcs, obj_fun,
     # Read labels
     # data_path = sample.data_path()
     subjects_dir = sample.data_path() + '/subjects'
-    labels = mne.read_labels_from_annot('sample', parc='aparc.split-125',
+    labels = mne.read_labels_from_annot('sample', parc='aparc.a2009s',
                                         subjects_dir=subjects_dir)
 
     # First, we reorder the labels based on their location in the left hemi
