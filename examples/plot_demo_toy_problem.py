@@ -1,3 +1,16 @@
+"""
+=====================================
+Plot a demonstration on a toy problem
+=====================================
+
+This example demonstrates the difficulty to recover sources
+which have stronger correlation between the columns of the
+gain matrix G.
+"""
+# Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+
+# License: BSD (3-clause)
 
 import numpy as np
 from scipy import linalg
@@ -5,9 +18,10 @@ from scipy.linalg.special_matrices import toeplitz
 import matplotlib.pyplot as plt
 
 from mne.inverse_sparse.mxne_optim import norm_l2inf
-from bayes_meeg_.gamma_hypermodel_optimizer import mm_mixed_norm_bayes
+from bayes_meeg.gamma_hypermodel_optimizer import mm_mixed_norm_bayes
 
 
+###############################################################################
 # Construction of a covariance matrix
 n_features = 40
 n_samples = 15
@@ -48,6 +62,7 @@ out = mm_mixed_norm_bayes(
 
 freq_occ = np.mean(active_sets, axis=0)
 
+###############################################################################
 plt.close('all')
 
 # Plot the covariance to see the correlation of the neighboring
