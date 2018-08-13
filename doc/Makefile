@@ -104,7 +104,8 @@ install:
 	# --no-checkout just fetches the root folder without content
 	# --depth 1 is a speed optimization since we don't need the
 	# history prior to the last commit
-	git clone --no-checkout --depth 1 https://github.com/yousrabk/bayes_meeg.github.io.git _build/bayes_meeg.github.io
+	# -b gh-pages fetches only the branch for the gh-pages
+	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/yousrabk/bayes_meeg.github.io.git _build/bayes_meeg.github.io
 	touch _build/bayes_meeg.github.io/.nojekyll
 	make html
 	cd _build/ && \

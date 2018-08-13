@@ -9,7 +9,7 @@ bayes_meeg
 Installation
 ============
 
-We recommend the `Anaconda Python distribution <https://www.continuum.io/downloads>`_. To install ``autoreject``, you first need to install its dependencies::
+We recommend the `Anaconda Python distribution <https://www.continuum.io/downloads>`_. To install ``bayes_meeg``, you first need to install its dependencies::
 
 	$ conda install numpy matplotlib scipy mayavi numba
 	$ pip install -U mne
@@ -35,6 +35,7 @@ Use the `github issue tracker <https://github.com/yousrabk/bayes_meeg/issues>`_ 
 Cite
 ====
 
-[1] Bekhti, Y., Lucka, F., Salmon, J., & Gramfort, A. (2018). A hierarchical Bayesian
+[1] Bekhti, Y., Lucka, F., Salmon, J., & Gramfort, A. (2018). `A hierarchical Bayesian
 	perspective on majorization-minimization for non-convex sparse regression:
-	application to M/EEG source imaging. Inverse Problems. [paper](http://iopscience.iop.org/article/10.1088/1361-6420/aac9b3/pdf)
+	application to M/EEG source imaging <http://iopscience.iop.org/article/10.1088/1361-6420/aac9b3/pdf>`_.
+	Inverse Problems.

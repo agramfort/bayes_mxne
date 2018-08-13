@@ -28,6 +28,8 @@ def neg_log_post_prob(G, X, M, n_orient, gamma, alpha, beta, n_times):
 def log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
     """Compute the log posterior probability.
 
+    Parameters
+    ----------
     XChain : list
         list containing the chain of K X_samples.
     gammaChain : list
