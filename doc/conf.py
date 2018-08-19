@@ -22,7 +22,7 @@ import sphinx_bootstrap_theme
 # -- Project information -----------------------------------------------------
 
 project = 'bayes_mxne'
-copyright = '2018, Yousra Bekhti'
+copyright = '2018, Yousra Bekhti, Alex Gramfort, Felix Lucka and Joseph Salmon'
 author = 'Yousra Bekhti'
 
 # The short X.Y version
