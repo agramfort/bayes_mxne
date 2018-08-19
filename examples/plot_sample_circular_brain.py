@@ -8,7 +8,7 @@ MCMC initilization. Plot then on a circular plot all the configurations
 of the source localization.
 """
 # Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Alexandre Gramfort <alexandre.gramfort@inria.fr>
 
 # License: BSD (3-clause)
 
@@ -102,9 +102,10 @@ def apply_solver(evoked, forward, noise_cov, loose=0.2, depth=0.8, K=2000):
 
 
 ###############################################################################
-# Apply your solver
+# Apply the solver
+# ----------------
 
-loose, depth, K = None, 0.8, 5
+loose, depth, K = None, 0.8, 1
 out = apply_solver(evoked, forward, noise_cov, loose=loose,
                    depth=depth, K=K)
 solution_support, stcs, obj_fun = out

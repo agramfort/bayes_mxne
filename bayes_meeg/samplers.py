@@ -1,10 +1,11 @@
 from math import log, sqrt, log1p, exp
 import numpy as np
 from scipy import linalg
+from numba import jit, float64
 
 from mne.inverse_sparse.mxne_optim import groups_norm2
-from bayes_meeg.pyrtnorm import rtnorm
-from numba import jit, float64
+
+from .pyrtnorm import rtnorm
 
 
 @jit(float64(float64, float64), nopython=True, nogil=True)
@@ -92,7 +93,6 @@ def sc_slice_sampler(a, b, c, d, x0, n_samples):
     return x
 
 
-# @profile
 def L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
                                  n_samples, sc_n_samples=10, ss_n_samples=200):
     rng = np.random.RandomState(42)

@@ -1,10 +1,10 @@
-
 import numpy as np
 from numpy.linalg import norm
 
 from mne.inverse_sparse.mxne_optim import (mixed_norm_solver,
                                            groups_norm2)
-from bayes_meeg.samplers import L21_gamma_hypermodel_sampler
+
+from .samplers import L21_gamma_hypermodel_sampler
 
 
 # The L21GammaHyperModelOptimizer

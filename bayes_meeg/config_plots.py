@@ -9,9 +9,6 @@ from mne.datasets import sample
 from mne.inverse_sparse.mxne_optim import groups_norm2
 from mne.viz import circular_layout, plot_connectivity_circle
 
-from surfer import Brain
-import matplotlib.pylab as plt
-
 data_path = expanduser('~') + '/Dropbox/bayes_meeg_data/'
 
 
@@ -20,6 +17,7 @@ def circular_brain_plot(forward, solution_support, stcs, obj_fun,
                         plot_labels=True, n_burnin=0, vmin=0., vmax=10.,
                         plot_hist=False, subplot=111, title='', fig=None,
                         colorbar=True):
+    import matplotlib.pylab as plt
 
     indices = list()
     vertices_lh = list()
@@ -213,6 +211,7 @@ def plot_bars_circular(n_support, node_angles, freqs, ax):
 def brain_labels(labels, names, subjects_dir, stc=None,
                  title=None, hemi='both', view=['med'], save=False,
                  fname='', dataset='sample_LAud'):
+    from surfer import Brain
     n_support = names.shape[0]
     label_names = [label.name for label in labels]
     # Plot the selected labels in a Brain
@@ -243,6 +242,7 @@ def brain_labels(labels, names, subjects_dir, stc=None,
 
 def plot_vertices(vertices_lh, vertices_rh, alpha=0.5, save=False,
                   fname=None, simulated=False, col='green'):
+    from surfer import Brain
     # Read labels
     subjects_dir = sample.data_path() + '/subjects'
     lh_vertex = 114573  # Auditory label

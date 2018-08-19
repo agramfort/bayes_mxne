@@ -8,7 +8,7 @@ which have stronger correlation between the columns of the
 gain matrix G.
 """
 # Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Alexandre Gramfort <alexandre.gramfort@inria.fr>
 
 # License: BSD (3-clause)
 
@@ -22,7 +22,10 @@ from bayes_meeg.gamma_hypermodel_optimizer import mm_mixed_norm_bayes
 
 
 ###############################################################################
-# Construction of a covariance matrix
+# Construction of simulated data
+# ------------------------------
+#
+# First we define the problem size and the location of the active sources.
 n_features = 40
 n_samples = 15
 n_times = 10
@@ -32,6 +35,8 @@ X_true = np.zeros((n_features, n_times))
 X_true[10, :] = 2.
 X_true[30, :] = 2.
 
+###############################################################################
+# Construction of a covariance matrix
 rng = np.random.RandomState(0)
 # Set the correlation of each simulated source
 corr = [0.6, 0.95]
@@ -42,14 +47,19 @@ for c in corr:
 
 cov = np.array(linalg.block_diag(*cov))
 
-# Simulation of the design
+###############################################################################
+# Simulation of the design matrix / forward operator
 G = rng.multivariate_normal(np.zeros(n_features), cov, size=n_samples)
-# Simulation of the data
+
+###############################################################################
+# Simulation of the data with some noise
 M = G.dot(X_true)
 M += 0.3 * np.std(M) * rng.randn(n_samples, n_times)
 n_orient = 1
 
-# The value of lambda for which the solution will be all zero
+###############################################################################
+# Define the regularization parameter and run the solver
+# ------------------------------------------------------
 lambda_max = norm_l2inf(np.dot(G.T, M), n_orient)
 
 lambda_ref = 0.1 * lambda_max
@@ -63,10 +73,9 @@ out = mm_mixed_norm_bayes(
 freq_occ = np.mean(active_sets, axis=0)
 
 ###############################################################################
-plt.close('all')
-
 # Plot the covariance to see the correlation of the neighboring
 # sources around each simulated one (10 and 30).
+
 plt.matshow(cov)
 plt.title('Covariance')
 
