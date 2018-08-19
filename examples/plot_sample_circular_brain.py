@@ -105,7 +105,7 @@ def apply_solver(evoked, forward, noise_cov, loose=0.2, depth=0.8, K=2000):
 # Apply the solver
 # ----------------
 
-loose, depth, K = None, 0.8, 1
+loose, depth, K = None, 0.8, 5
 out = apply_solver(evoked, forward, noise_cov, loose=loose,
                    depth=depth, K=K)
 solution_support, stcs, obj_fun = out
