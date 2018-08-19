@@ -27,6 +27,6 @@ If you use this code in your project, please cite::
 
     [1] Bekhti, Y., Lucka, F., Salmon, J., & Gramfort, A. (2018). A hierarchical Bayesian
     perspective on majorization-minimization for non-convex sparse regression: application
-    to M/EEG source imaging. Inverse Problems.
+    to M/EEG source imaging. Inverse Problems, Volume 34, Number 8.
 
 Get the PDF of the `paper <http://iopscience.iop.org/article/10.1088/1361-6420/aac9b3/pdf>`_.
