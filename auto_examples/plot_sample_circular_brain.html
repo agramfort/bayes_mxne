@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Circular plot of the configurations &#8212; bayes_mxne  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          bayes_mxne</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="https://github.com/yousrabk/bayes_mxne">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Circular plot of the configurations</a><ul>
+<li><a class="reference internal" href="#apply-the-solver">Apply the solver</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/plot_sample_circular_brain.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="circular-plot-of-the-configurations">
+<span id="sphx-glr-auto-examples-plot-sample-circular-brain-py"></span><h1>Circular plot of the configurations<a class="headerlink" href="#circular-plot-of-the-configurations" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrates how to run a MM solver using K different
+MCMC initilization. Plot then on a circular plot all the configurations
+of the source localization.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Authors: Yousra Bekhti &lt;yousra.bekhti@gmail.com&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@inria.fr&gt;</span>
+
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
+
+<span class="kn">from</span> <span class="nn">mne.inverse_sparse.mxne_inverse</span> <span class="kn">import</span> \
+    <span class="p">(</span><span class="n">_prepare_gain</span><span class="p">,</span> <span class="n">is_fixed_orient</span><span class="p">,</span> <span class="n">_make_sparse_stc</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.inverse_sparse.mxne_optim</span> <span class="kn">import</span> <span class="n">norm_l2inf</span>
+
+<span class="kn">from</span> <span class="nn">bayes_mxne.gamma_hypermodel_optimizer</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mm_mixed_norm_bayes</span><span class="p">,</span>
+                                                   <span class="n">compute_block_norms</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bayes_mxne.config_plots</span> <span class="kn">import</span> <span class="n">energy_l2half_reg</span><span class="p">,</span> <span class="n">circular_brain_plot</span>
+</pre></div>
+</div>
+<p>Let us read in the <cite>fif</cite> file for MNE sample dataset corresponding
+to the forward, the evoked and the covariance matrix.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">data_path</span><span class="p">()</span>
+
+<span class="n">fwd_fname</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis-meg-eeg-oct-6-fwd.fif&#39;</span>
+<span class="n">ave_fname</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis-ave.fif&#39;</span>
+<span class="n">cov_fname</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/MEG/sample/sample_audvis-shrunk-cov.fif&#39;</span>
+
+<span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/subjects&#39;</span>
+<span class="n">condition</span> <span class="o">=</span> <span class="s1">&#39;Left Auditory&#39;</span>
+
+<span class="c1"># Read noise covariance matrix</span>
+<span class="n">noise_cov</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_cov</span><span class="p">(</span><span class="n">cov_fname</span><span class="p">)</span>
+
+<span class="c1"># Handling average file</span>
+<span class="n">evoked</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_evokeds</span><span class="p">(</span><span class="n">ave_fname</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">evoked</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mf">0.18</span><span class="p">)</span>
+<span class="n">evoked</span> <span class="o">=</span> <span class="n">evoked</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Handling forward solution</span>
+<span class="n">forward</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_forward_solution</span><span class="p">(</span><span class="n">fwd_fname</span><span class="p">)</span>
+<span class="n">forward</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">convert_forward_solution</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span> <span class="n">surf_ori</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run solver method</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">apply_solver</span><span class="p">(</span><span class="n">evoked</span><span class="p">,</span> <span class="n">forward</span><span class="p">,</span> <span class="n">noise_cov</span><span class="p">,</span> <span class="n">loose</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="mi">2000</span><span class="p">):</span>
+    <span class="n">all_ch_names</span> <span class="o">=</span> <span class="n">evoked</span><span class="o">.</span><span class="n">ch_names</span>
+    <span class="c1"># put the forward solution in fixed orientation if it&#39;s not already</span>
+    <span class="k">if</span> <span class="n">loose</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_fixed_orient</span><span class="p">(</span><span class="n">forward</span><span class="p">):</span>
+        <span class="n">forward</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">forward</span><span class="p">)</span>
+        <span class="n">forward</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">convert_forward_solution</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span> <span class="n">force_fixed</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">gain</span><span class="p">,</span> <span class="n">gain_info</span><span class="p">,</span> <span class="n">whitener</span><span class="p">,</span> <span class="n">source_weighting</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_prepare_gain</span><span class="p">(</span>
+        <span class="n">forward</span><span class="p">,</span> <span class="n">evoked</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">noise_cov</span><span class="p">,</span> <span class="n">pca</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span>
+        <span class="n">loose</span><span class="o">=</span><span class="n">loose</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">weights_min</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+    <span class="n">n_locations</span> <span class="o">=</span> <span class="n">gain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">gain_info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">]]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">evoked</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">sel</span><span class="p">]</span>
+
+    <span class="c1"># Whiten data</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">whitener</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+
+    <span class="n">n_orient</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">is_fixed_orient</span><span class="p">(</span><span class="n">forward</span><span class="p">)</span> <span class="k">else</span> <span class="mi">3</span>
+
+    <span class="c1"># The value of lambda for which the solution will be all zero</span>
+    <span class="n">lambda_max</span> <span class="o">=</span> <span class="n">norm_l2inf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gain</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">n_orient</span><span class="p">)</span>
+
+    <span class="n">lambda_ref</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">lambda_max</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">mm_mixed_norm_bayes</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">n_orient</span><span class="o">=</span><span class="n">n_orient</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">return_lpp</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">active_sets</span><span class="p">),</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">out</span>
+
+    <span class="n">solution_support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">K</span><span class="p">,</span> <span class="n">n_locations</span><span class="p">))</span>
+    <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_locations</span><span class="p">,</span> <span class="n">Xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">X</span><span class="p">[</span><span class="n">active_sets</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">block_norms_new</span> <span class="o">=</span> <span class="n">compute_block_norms</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_orient</span><span class="p">)</span>
+        <span class="n">block_norms_new</span> <span class="o">=</span> <span class="p">(</span><span class="n">block_norms_new</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">block_norms_new</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">solution_support</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">block_norms_new</span>
+
+        <span class="n">stc</span> <span class="o">=</span> <span class="n">_make_sparse_stc</span><span class="p">(</span><span class="n">Xs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">active_sets</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">forward</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                               <span class="n">tstep</span><span class="o">=</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">evoked</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">])</span>
+        <span class="n">stcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stc</span><span class="p">)</span>
+        <span class="n">obj_fun</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy_l2half_reg</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">stc</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">active_sets</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                       <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">n_orient</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">solution_support</span><span class="p">,</span> <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span>
+</pre></div>
+</div>
+<div class="section" id="apply-the-solver">
+<h2>Apply the solver<a class="headerlink" href="#apply-the-solver" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">loose</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">5</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">apply_solver</span><span class="p">(</span><span class="n">evoked</span><span class="p">,</span> <span class="n">forward</span><span class="p">,</span> <span class="n">noise_cov</span><span class="p">,</span> <span class="n">loose</span><span class="o">=</span><span class="n">loose</span><span class="p">,</span>
+                   <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+<span class="n">solution_support</span><span class="p">,</span> <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span> <span class="o">=</span> <span class="n">out</span>
+</pre></div>
+</div>
+<p>Plotting of all configurations intro a circular plot</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">circular_brain_plot</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span> <span class="n">solution_support</span><span class="p">,</span> <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_sample_circular_brain.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sample_circular_brain.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_sample_circular_brain.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_sample_circular_brain.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Yousra Bekhti, Alex Gramfort, Felix Lucka and Joseph Salmon.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
