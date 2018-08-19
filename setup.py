@@ -13,14 +13,14 @@ with open(os.path.join('bayes_mxne', '__init__.py'), 'r') as fid:
 if version is None:
     raise RuntimeError('Could not determine version')
 
-descr = """Hierarchical Bayes approach to solve M/EEG inverse problem."""
+descr = """Mixed-norms and Hierarchical Bayesian models for the M/EEG inverse problem"""
 
 DISTNAME = 'bayes_mxne'
 DESCRIPTION = descr
 MAINTAINER = 'Yousra Bekhti'
 MAINTAINER_EMAIL = 'yousra.bekhti@gmail.com'
 LICENSE = 'BSD (3-clause)'
-DOWNLOAD_URL = 'https://github.com/yousrabk/bayes_mxne'
+DOWNLOAD_URL = 'https://github.com/agramfort/bayes_mxne'
 VERSION = version
 
 if __name__ == "__main__":
@@ -31,7 +31,7 @@ if __name__ == "__main__":
           license=LICENSE,
           version=VERSION,
           download_url=DOWNLOAD_URL,
-          long_description=open('README.md').read(),
+          long_description=open('README.rst').read(),
           classifiers=[
               'Intended Audience :: Science/Research',
               'Intended Audience :: Developers',

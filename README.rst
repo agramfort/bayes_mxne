@@ -1,4 +1,4 @@
-Mixed-norms and Hierarchical Bayesian models for M/EEG Source Localization
+Mixed-norms and Hierarchical Bayesian models for the M/EEG inverse problem
 ==========================================================================
 
 This repository hosts the code to solve the M/EEG inverse problem. It improves the majorization-minimization techniques by probing the multimodal posterior density using Markov Chain Monte-Carlo (MCMC) techniques.
@@ -10,7 +10,8 @@ Dependencies
 
 * mne
 * numba
-* mayavi
+
+For instructions on how to install MNE see: http://martinos.org/mne/stable/install_mne_python.html
 
 Installation
 ------------
