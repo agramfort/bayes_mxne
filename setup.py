@@ -3,9 +3,9 @@ import os
 import setuptools  # noqa; we are using a setuptools namespace
 from numpy.distutils.core import setup
 
-# get the version (don't import bayes_meeg here to avoid dependency)
+# get the version (don't import bayes_mxne here to avoid dependency)
 version = None
-with open(os.path.join('bayes_meeg', '__init__.py'), 'r') as fid:
+with open(os.path.join('bayes_mxne', '__init__.py'), 'r') as fid:
     for line in (line.strip() for line in fid):
         if line.startswith('__version__'):
             version = line.split('=')[1].strip().strip('\'')
@@ -15,12 +15,12 @@ if version is None:
 
 descr = """Hierarchical Bayes approach to solve M/EEG inverse problem."""
 
-DISTNAME = 'bayes_meeg'
+DISTNAME = 'bayes_mxne'
 DESCRIPTION = descr
 MAINTAINER = 'Yousra Bekhti'
 MAINTAINER_EMAIL = 'yousra.bekhti@gmail.com'
 LICENSE = 'BSD (3-clause)'
-DOWNLOAD_URL = 'https://github.com/yousrabk/bayes_meeg'
+DOWNLOAD_URL = 'https://github.com/yousrabk/bayes_mxne'
 VERSION = version
 
 if __name__ == "__main__":
@@ -46,6 +46,6 @@ if __name__ == "__main__":
           ],
           platforms='any',
           packages=[
-              'bayes_meeg'
+              'bayes_mxne'
           ],
           )

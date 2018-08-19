@@ -18,7 +18,7 @@ from scipy.linalg.special_matrices import toeplitz
 import matplotlib.pyplot as plt
 
 from mne.inverse_sparse.mxne_optim import norm_l2inf
-from bayes_meeg.gamma_hypermodel_optimizer import mm_mixed_norm_bayes
+from bayes_mxne.gamma_hypermodel_optimizer import mm_mixed_norm_bayes
 
 
 ###############################################################################

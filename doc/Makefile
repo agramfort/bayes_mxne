@@ -97,20 +97,20 @@ coverage:
 		  "results in $(BUILDDIR)/coverage/python.txt."
 
 install:
-	rm -rf _build/doctrees _build/bayes_meeg.github.io
-	# first clone the yousrabk/bayes_meeg.github.io repo because it may ask
+	rm -rf _build/doctrees _build/bayes_mxne.github.io
+	# first clone the yousrabk/bayes_mxne.github.io repo because it may ask
 	# for password and we don't want to delay this long build in
 	# the middle of it
 	# --no-checkout just fetches the root folder without content
 	# --depth 1 is a speed optimization since we don't need the
 	# history prior to the last commit
 	# -b gh-pages fetches only the branch for the gh-pages
-	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/yousrabk/bayes_meeg _build/bayes_meeg.github.io
-	touch _build/bayes_meeg.github.io/.nojekyll
+	git clone -b gh-pages --single-branch --no-checkout --depth 1 https://github.com/yousrabk/bayes_mxne _build/bayes_mxne.github.io
+	touch _build/bayes_mxne.github.io/.nojekyll
 	make html
 	cd _build/ && \
-	cp -r html/* bayes_meeg.github.io && \
-	cd bayes_meeg.github.io && \
+	cp -r html/* bayes_mxne.github.io && \
+	cd bayes_mxne.github.io && \
 	git add * && \
 	git add .nojekyll && \
 	git commit -a -m 'Make install' && \

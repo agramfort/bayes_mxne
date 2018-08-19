@@ -9,7 +9,7 @@ from mne.datasets import sample
 from mne.inverse_sparse.mxne_optim import groups_norm2
 from mne.viz import circular_layout, plot_connectivity_circle
 
-data_path = expanduser('~') + '/Dropbox/bayes_meeg_data/'
+data_path = expanduser('~') + '/Dropbox/bayes_mxne_data/'
 
 
 def circular_brain_plot(forward, solution_support, stcs, obj_fun,

@@ -21,7 +21,7 @@ import sphinx_bootstrap_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'bayes_meeg'
+project = 'bayes_mxne'
 copyright = '2018, Yousra Bekhti'
 author = 'Yousra Bekhti'
 
@@ -87,7 +87,7 @@ html_theme_options = {
     'navbar_sidebarrel': False,
     'navbar_links': [
         ("Examples", "auto_examples/index"),
-        ("GitHub", "https://github.com/yousrabk/bayes_meeg", True)
+        ("GitHub", "https://github.com/yousrabk/bayes_mxne", True)
     ],
     'bootswatch_theme': "united"
 }
@@ -111,7 +111,7 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'bayes_meegdoc'
+htmlhelp_basename = 'bayes_mxnedoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -138,7 +138,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'bayes_meeg.tex', 'bayes\\_meeg Documentation',
+    (master_doc, 'bayes_mxne.tex', 'bayes\\_meeg Documentation',
      'Yousra Bekhti', 'manual'),
 ]
 
@@ -148,7 +148,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'bayes_meeg', 'bayes_meeg Documentation',
+    (master_doc, 'bayes_mxne', 'bayes_mxne Documentation',
      [author], 1)
 ]
 
@@ -159,8 +159,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'bayes_meeg', 'bayes_meeg Documentation',
-     author, 'bayes_meeg', 'One line description of project.',
+    (master_doc, 'bayes_mxne', 'bayes_mxne Documentation',
+     author, 'bayes_mxne', 'One line description of project.',
      'Miscellaneous'),
 ]
 

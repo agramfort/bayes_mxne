@@ -22,9 +22,9 @@ from mne.inverse_sparse.mxne_inverse import \
     (_prepare_gain, is_fixed_orient, _make_sparse_stc)
 from mne.inverse_sparse.mxne_optim import norm_l2inf
 
-from bayes_meeg.gamma_hypermodel_optimizer import (mm_mixed_norm_bayes,
+from bayes_mxne.gamma_hypermodel_optimizer import (mm_mixed_norm_bayes,
                                                    compute_block_norms)
-from bayes_meeg.config_plots import energy_l2half_reg, circular_brain_plot
+from bayes_mxne.config_plots import energy_l2half_reg, circular_brain_plot
 
 ###############################################################################
 # Let us read in the `fif` file for MNE sample dataset corresponding
