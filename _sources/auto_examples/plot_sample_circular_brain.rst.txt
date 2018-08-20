@@ -35,6 +35,11 @@ of the source localization.
     from bayes_mxne.config_plots import energy_l2half_reg, circular_brain_plot
 
 
+
+
+
+
+
 Let us read in the `fif` file for MNE sample dataset corresponding
 to the forward, the evoked and the covariance matrix.
 
@@ -62,6 +67,11 @@ to the forward, the evoked and the covariance matrix.
     # Handling forward solution
     forward = mne.read_forward_solution(fwd_fname)
     forward = mne.convert_forward_solution(forward, surf_ori=True)
+
+
+
+
+
 
 
 
@@ -120,6 +130,11 @@ Run solver method
 
 
 
+
+
+
+
+
 Apply the solver
 ----------------
 
@@ -134,6 +149,80 @@ Apply the solver
     solution_support, stcs, obj_fun = out
 
 
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 84
+    iter 2 - active set 12
+    iter 3 - active set 8
+    iter 4 - active set 7
+    iter 5 - active set 7
+    iter 6 - active set 6
+    iter 7 - active set 6
+    iter 8 - active set 6
+    iter 9 - active set 6
+    sample 0 - lppSamp -397956.80746715365 - relResSamp 2.1599679302090715 - lppMAP -791.0515656606742 - relResSamp 0.7018439306255114
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 110
+    iter 2 - active set 12
+    iter 3 - active set 9
+    iter 4 - active set 6
+    iter 5 - active set 5
+    iter 6 - active set 4
+    iter 7 - active set 4
+    iter 8 - active set 4
+    iter 9 - active set 4
+    sample 1 - lppSamp -480038.37679683964 - relResSamp 2.3287710867142954 - lppMAP -747.8268541936736 - relResSamp 0.713549821491845
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 113
+    iter 2 - active set 11
+    iter 3 - active set 7
+    iter 4 - active set 6
+    iter 5 - active set 5
+    iter 6 - active set 4
+    iter 7 - active set 3
+    iter 8 - active set 3
+    iter 9 - active set 3
+    sample 2 - lppSamp -531896.5568347392 - relResSamp 2.3993720715597804 - lppMAP -742.0679159076859 - relResSamp 0.7248672566935047
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 104
+    iter 2 - active set 12
+    iter 3 - active set 6
+    iter 4 - active set 4
+    iter 5 - active set 4
+    iter 6 - active set 4
+    iter 7 - active set 4
+    iter 8 - active set 4
+    iter 9 - active set 4
+    sample 3 - lppSamp -570591.4582464688 - relResSamp 2.4362021934239206 - lppMAP -756.5508547757535 - relResSamp 0.7076956844285733
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 119
+    iter 2 - active set 11
+    iter 3 - active set 8
+    iter 4 - active set 7
+    iter 5 - active set 6
+    iter 6 - active set 4
+    iter 7 - active set 4
+    iter 8 - active set 4
+    iter 9 - active set 4
+    sample 4 - lppSamp -601781.7809723571 - relResSamp 2.490956226717366 - lppMAP -759.3391236552872 - relResSamp 0.7173077037606997
+
+
 Plotting of all configurations intro a circular plot
 
 
@@ -142,7 +231,15 @@ Plotting of all configurations intro a circular plot
 
     circular_brain_plot(forward, solution_support, stcs, obj_fun)
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_sample_circular_brain_001.png
+    :class: sphx-glr-single-img
+
+
+
+
+**Total running time of the script:** ( 663 minutes  33.778 seconds)
 
 
 
