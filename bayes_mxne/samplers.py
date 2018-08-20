@@ -203,7 +203,6 @@ if __name__ == '__main__':
     def dist(xx):
         return np.exp(- coupling / xx) * np.exp(- xx / beta)
 
-
     Z, _ = quad(dist, 1e-5, 20)
 
     plt.figure()

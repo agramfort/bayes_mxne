@@ -169,5 +169,6 @@ sphinx_gallery_conf = {
     'examples_dirs': '../examples',
     # path where to save gallery generated examples
     'gallery_dirs': 'auto_examples',
+    'find_mayavi_figures': True,
     'backreferences_dir': False
 }
