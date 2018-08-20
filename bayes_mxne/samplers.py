@@ -1,3 +1,9 @@
+# Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
+#          Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#          Felix Lucka <f.lucka@ucl.ac.uk>
+#          Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+
+
 from math import log, sqrt, log1p, exp
 import numpy as np
 from scipy import linalg
@@ -9,7 +15,7 @@ from .pyrtnorm import rtnorm
 
 
 @jit(float64(float64, float64), nopython=True, nogil=True)
-def _cond_gamma_hyperprior_sampler(coupling, beta):
+def _cond_gamma_hyperprior_sampler_aux(coupling, beta):
     # compute maximal value
     if coupling == 0:
         gamma = - beta * log(np.random.rand())
@@ -48,22 +54,22 @@ def _cond_gamma_hyperprior_sampler(coupling, beta):
     return gamma
 
 
-def cond_gamma_hyperprior_sampler(coupling, beta):
+def _cond_gamma_hyperprior_sampler(coupling, beta):
     r"""Sample from distribution of the form
 
     p(gamma) \prop exp(- coupling / gamma) exp(- gamma / beta)
     """
     if isinstance(coupling, float):
-        gamma = _cond_gamma_hyperprior_sampler(coupling, beta)
+        gamma = _cond_gamma_hyperprior_sampler_aux(coupling, beta)
     else:
         gamma = np.empty(len(coupling))
         for i in range(len(coupling)):
-            gamma[i] = _cond_gamma_hyperprior_sampler(coupling[i], beta)
+            gamma[i] = _cond_gamma_hyperprior_sampler_aux(coupling[i], beta)
 
     return gamma
 
 
-def sc_slice_sampler(a, b, c, d, x0, n_samples):
+def _sc_slice_sampler(a, b, c, d, x0, n_samples):
     r"""Sample from
 
     p(x) \prop exp(-a x^2 + b x - c \sqrt{x^2 + d})
@@ -93,8 +99,10 @@ def sc_slice_sampler(a, b, c, d, x0, n_samples):
     return x
 
 
-def L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
-                                 n_samples, sc_n_samples=10, ss_n_samples=200):
+def _L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
+                                  n_samples, sc_n_samples=10,
+                                  ss_n_samples=200, verbose=False):
+    # XXX : add docstring
     rng = np.random.RandomState(42)
     n_dipoles = G.shape[1]
     n_locations = n_dipoles // n_orient
@@ -114,7 +122,8 @@ def L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
         X = X0
 
     for k in range(-n_burnin, n_samples):
-        print("Running iter %d" % k)
+        if verbose:
+            print("Running iter %d" % k)
         # update X by single component Gibbs sampler
         # initialize with 0 instead of current state (this had a proper reason,
         # but we should re-examine)
@@ -122,7 +131,6 @@ def L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
 
         for kSCGibbs in range(sc_n_samples):
             # print(" -- Running SC iter %d" % kSCGibbs)
-            # randLocOrder = rng.randint(n_locations, size=n_locations)
             randLocOrder = rng.permutation(n_locations)
             for jLoc in randLocOrder:
                 # a only depends on the location
@@ -145,7 +153,7 @@ def L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
                             2 * a * XjComp
                         d = XLocSqNorm - XjComp**2
                         # call slice sampler
-                        XjComp = sc_slice_sampler(
+                        XjComp = _sc_slice_sampler(
                             a, b, c, d, XjComp, ss_n_samples)
                         # update auxillary variables
                         XLocSqNorm = d + XjComp**2
@@ -161,7 +169,7 @@ def L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
         # update gamma by umbrella sampler
         # Compute the amplitudes of the sources for one hyperparameter
         XBlkNorm = np.sqrt(groups_norm2(X.copy(), n_orient))
-        gammas = cond_gamma_hyperprior_sampler(XBlkNorm, beta)
+        gammas = _cond_gamma_hyperprior_sampler(XBlkNorm, beta)
 
         # store results
         if k >= 0:
@@ -180,11 +188,11 @@ if __name__ == '__main__':
     coupling = 1.
     couplings = coupling * np.ones(size)
 
-    gammas = cond_gamma_hyperprior_sampler(couplings[:1], beta)
+    gammas = _cond_gamma_hyperprior_sampler(couplings[:1], beta)
 
     import time
     t0 = time.time()
-    gammas = cond_gamma_hyperprior_sampler(couplings, beta)
+    gammas = _cond_gamma_hyperprior_sampler(couplings, beta)
     print(time.time() - t0)
 
     plt.close('all')
@@ -195,6 +203,7 @@ if __name__ == '__main__':
     def dist(xx):
         return np.exp(- coupling / xx) * np.exp(- xx / beta)
 
+
     Z, _ = quad(dist, 1e-5, 20)
 
     plt.figure()
@@ -203,7 +212,7 @@ if __name__ == '__main__':
     plt.show()
 
     (a, b, c, d), x0, n_samples = (1,) * 4, 0., 1000
-    chain = sc_slice_sampler(a, b, c, d, x0, n_samples)
+    chain = _sc_slice_sampler(a, b, c, d, x0, n_samples)
 
     def dist(xx):
         return np.exp(-a * xx ** 2 + b * xx - c * np.sqrt(xx ** 2 + d))

@@ -5,7 +5,7 @@ CYTHON ?= cython
 PYTEST ?= pytest
 CTAGS ?= ctags
 
-all: clean test doc-noplot
+all: clean test
 
 clean-pyc:
 	find . -name "*.pyc" | xargs rm -f

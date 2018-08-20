@@ -1,10 +1,16 @@
+# Authors: Yousra Bekhti <yousra.bekhti@gmail.com>
+#          Alexandre Gramfort <alexandre.gramfort@inria.fr>
+#          Felix Lucka <f.lucka@ucl.ac.uk>
+#          Joseph Salmon <joseph.salmon@telecom-paristech.fr>
+
+
 import numpy as np
 from numpy.linalg import norm
 
 from mne.inverse_sparse.mxne_optim import (mixed_norm_solver,
                                            groups_norm2)
 
-from .samplers import L21_gamma_hypermodel_sampler
+from .samplers import _L21_gamma_hypermodel_sampler
 
 
 # The L21GammaHyperModelOptimizer
@@ -12,7 +18,7 @@ def compute_block_norms(w, n_orient):
     return np.sqrt(groups_norm2(w.copy(), n_orient))
 
 
-def neg_log_post_prob(G, X, M, n_orient, gamma, alpha, beta, n_times):
+def _neg_log_post_prob(G, X, M, n_orient, gamma, alpha, beta, n_times):
     R = norm(np.dot(G, X) - M, 'fro')
     relRes = R / norm(M, 'fro')
     nlpp = 1 / 2 * R ** 2
@@ -25,13 +31,13 @@ def neg_log_post_prob(G, X, M, n_orient, gamma, alpha, beta, n_times):
     return nlpp, relRes
 
 
-def log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
+def _log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
     """Compute the log posterior probability.
 
     Parameters
     ----------
-    XChain : list
-        list containing the chain of K X_samples.
+    XChain : array, shape (n_dipoles, n_times, K)
+        The K samples on the chain.
     gammaChain : list
         list containing the chain of K gamma_samples.
     G : array, shape (n_sensors, n_dipoles)
@@ -41,6 +47,18 @@ def log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
     n_orient : int
         The number of orientation (1 : fixed or 3 : free or loose).
     beta : float
+        The beta parameter of the prior distribution.
+
+    Returns
+    -------
+    lpChain : array, shape (K,)
+        The data log-likelihood term for the K samples on the chain.
+        It boils down to the data fitting term.
+    relResChain : array, shape (K,)
+        The Frobenius norms of the residuals for the K samples of the chain,
+        normalized by the Frobenius norm of the data M.
+    blockNormChain : array, shape (K,)
+        The sum of the block norms for the K samples on the chain.
     """
     K = XChain.shape[2]
     lpChain = np.zeros((K,))
@@ -51,24 +69,27 @@ def log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
 
     for i in range(K):
         relResChain[i] = norm(np.dot(G, XChain[:, :, i]) - M, 'fro')
-        lpChain[i] = - 1 / 2 * relResChain[i] ** 2
+        lpChain[i] = - 1. / 2 * relResChain[i] ** 2
         relResChain[i] = relResChain[i] / normM
-        blockNormChain[i] = sum(compute_block_norms(XChain[:, :, i], n_orient))
+        # XXX use np.sum ?
+        blockNormChain[i] = \
+            sum(compute_block_norms(XChain[:, :, i], n_orient))
         XGammaRatio = compute_block_norms(XChain[:, :, i], n_orient) \
             / gammaChain[:, i]
-        lpChain[i] = lpChain[i] - sum(XGammaRatio[~np.isnan(XGammaRatio)])
-        lpChain[i] = lpChain[i] - sum(gammaChain[:, i] / beta)
+        lpChain[i] -= sum(XGammaRatio[~np.isnan(XGammaRatio)])
+        lpChain[i] -= sum(gammaChain[:, i] / beta)
 
     return lpChain, relResChain, blockNormChain
 
 
-def energy_l2half_reg(M, G, X, active_set, lambda_l2half, n_orient):
+def _energy_l2half_reg(M, G, X, active_set, lambda_l2half, n_orient):
     reg = lambda_l2half * np.sqrt(compute_block_norms(X, n_orient)).sum()
     return norm(np.dot(G[:, active_set], X) - M, 'fro') + reg
 
 
-def L21_gamma_hypermodel_optimizer(G, M, gamma, alpha, beta, n_orient, maxIter,
-                                   lambdaRef, epsilon=1.e-6):
+def _L21_gamma_hypermodel_optimizer(G, M, gamma, alpha, beta, n_orient,
+                                    maxIter, lambdaRef, epsilon=1.e-6,
+                                    verbose=False):
     n_locations = G.shape[1] // n_orient
     n_times = M.shape[1]
 
@@ -82,7 +103,8 @@ def L21_gamma_hypermodel_optimizer(G, M, gamma, alpha, beta, n_orient, maxIter,
     active_set = np.ones((G.shape[1],), dtype='bool')
     Gbar = np.zeros(G.shape)
     for i_iter in range(maxIter):
-        print("iter %s - active set %s" % (i_iter, active_set.sum()))
+        if verbose:
+            print("iter %s - active set %s" % (i_iter, active_set.sum()))
         Xold = X.copy()
         X = np.zeros((n_locations * n_orient, n_times))
 
@@ -111,7 +133,7 @@ def L21_gamma_hypermodel_optimizer(G, M, gamma, alpha, beta, n_orient, maxIter,
         # else:
         #     break
 
-        energy[i_iter], relResiduum[i_iter] = neg_log_post_prob(
+        energy[i_iter], relResiduum[i_iter] = _neg_log_post_prob(
             G, X, M, n_orient, gamma[active_set[::n_orient]],
             alpha, beta, n_times)
 
@@ -121,7 +143,8 @@ def L21_gamma_hypermodel_optimizer(G, M, gamma, alpha, beta, n_orient, maxIter,
 
 def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
                         n_burnin=0, maxiter=10, return_lpp=False,
-                        return_samples=False):
+                        return_samples=False, random_state=42,
+                        verbose=False):
     """Run MM solver with K MCMC samples as initilization.
 
     Parameters
@@ -148,6 +171,11 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         It True the LPP is returned. XXX LPP?
     return_samples : bool
         If True, the samples on returned. XXX which samples?
+    random_state : int | None
+        An integer to fix the seed of the numpy random number
+        generator. Necessary to have replicable results.
+    verbose : bool
+        If True print info on optimization.
 
     Returns
     -------
@@ -157,6 +185,8 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         list of all active sets of each solution
     XXX : fix given the return_samples and return_lpp
     """
+    if random_state is not None:
+        np.random.seed(random_state)
     n_locations = G.shape[1] // n_orient
     n_times = M.shape[1]
 
@@ -177,7 +207,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
     relResMAP = np.zeros((K,))
     blockNormMAP = np.zeros((K,))
     solution_support = np.zeros((K, n_locations))
-    energy_l2half_reg_vec = np.zeros((K,))
+    _energy_l2half_reg_vec = np.zeros((K,))
 
     X_new_MAP = {}
     as_new_MAP = {}
@@ -191,21 +221,24 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
     for k in range(K):
         # compute new sample by continuing the chain at the last sample
         # and doing 1 step
-        X_sample, gamma_sample = L21_gamma_hypermodel_sampler(
-            M, G, X_sample[:, :, -1], gamma_sample[:, -1], n_orient,
-            b, n_burnin, 2, scK, ssK)
+        X_sample, gamma_sample = _L21_gamma_hypermodel_sampler(
+            M, G, X0=X_sample[:, :, -1], gammas=gamma_sample[:, -1],
+            n_orient=n_orient, beta=b, n_burnin=n_burnin,
+            n_samples=2, sc_n_samples=scK, ss_n_samples=ssK,
+            verbose=verbose)
 
         # compute new full-MAP estimate
         X_new_MAP[k], as_new_MAP[k], gamma_new_MAP, energy[k], _ = \
-            L21_gamma_hypermodel_optimizer(G, M, gamma_sample[:, -1], a, b,
-                                           n_orient, maxiter, lambda_map)
+            _L21_gamma_hypermodel_optimizer(G, M, gamma_sample[:, -1], a, b,
+                                            n_orient, maxiter, lambda_map,
+                                            verbose=verbose)
 
         # we compute and plot the log posterior probability, the relative
         # residual and the block norm to monitor the sampler
         lppSamples[k], relResSamples[k], blockNormSamples[k] = \
-            log_posterior_prob(X_sample[:, :, -1:], gamma_sample[:, -1:], G, M,
-                               n_orient, b)
-        lppMAP[k], relResMAP[k], blockNormMAP[k] = log_posterior_prob(
+            _log_posterior_prob(X_sample[:, :, -1:], gamma_sample[:, -1:], G,
+                                M, n_orient, b)
+        lppMAP[k], relResMAP[k], blockNormMAP[k] = _log_posterior_prob(
             X_new_MAP[k][:, :, np.newaxis], gamma_new_MAP[:, np.newaxis], G, M,
             n_orient, b)
 
@@ -213,12 +246,13 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         block_norms_new = (block_norms_new > 0.05 * block_norms_new.max())
         solution_support[k, :] = block_norms_new
 
-        energy_l2half_reg_vec[k] = energy_l2half_reg(
+        _energy_l2half_reg_vec[k] = _energy_l2half_reg(
             M, G, X_new_MAP[k][as_new_MAP[k]], as_new_MAP[k], lambda_ref,
             n_orient)
-        print("sample %s - lppSamp %s - relResSamp %s - lppMAP %s - relResSamp"
-              " %s"
-              % (k, lppSamples[k], relResSamples[k], lppMAP[k], relResMAP[k]))
+        if verbose:
+            print("sample %s - lppSamp %s - relResSamp %s - lppMAP %s - "
+                  "relResSamp %s" % (k, lppSamples[k], relResSamples[k],
+                                     lppMAP[k], relResMAP[k]))
         Xs.append(X_new_MAP[k][as_new_MAP[k]])
         As.append(as_new_MAP[k])
         if return_samples:
@@ -227,7 +261,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
 
     out = Xs, np.array(As)
     if return_lpp:
-        out = out, lppSamples, relResSamples, blockNormSamples, lppMAP
+        out = out, (lppSamples, relResSamples, blockNormSamples, lppMAP)
     if return_samples:
-        out = out, X_samples, gamma_samples
+        out = out, (np.array(X_samples), np.array(gamma_samples))
     return out

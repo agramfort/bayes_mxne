@@ -18,7 +18,7 @@ from scipy.linalg.special_matrices import toeplitz
 import matplotlib.pyplot as plt
 
 from mne.inverse_sparse.mxne_optim import norm_l2inf
-from bayes_mxne.gamma_hypermodel_optimizer import mm_mixed_norm_bayes
+from bayes_mxne import mm_mixed_norm_bayes
 
 
 ###############################################################################
@@ -65,10 +65,9 @@ lambda_max = norm_l2inf(np.dot(G.T, M), n_orient)
 lambda_ref = 0.1 * lambda_max
 K = 2000
 out = mm_mixed_norm_bayes(
-    M, G, lambda_ref, n_orient=n_orient, K=K, return_lpp=True)
+    M, G, lambda_ref, n_orient=n_orient, K=K, verbose=True)
 
-(Xs, active_sets), lpp_samples, rel_res_samples, block_norm_samples, lppMAP = \
-    out
+Xs, active_sets = out
 
 freq_occ = np.mean(active_sets, axis=0)
 
