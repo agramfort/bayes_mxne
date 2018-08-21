@@ -43,19 +43,19 @@ def get_np_state_ptr():
     return _helperlib.rnd_get_np_state_ptr()
 
 
-class use_numba_random(object):
-    def __init__(self, random_state=None):
-        self.random_state = random_state
+# class use_numba_random(object):
+#     def __init__(self, random_state=None):
+#         self.random_state = random_state
 
-    def __call__(self, func):
-        def new_func(*args, **kwargs):
-            r = check_random_state(self.random_state)
-            ptr = get_np_state_ptr()
-            _copy_np_state(r, ptr)
-            out = func(*args, **kwargs)
-            _copyback_np_state(r, ptr)
-            return out
-        return new_func
+#     def __call__(self, func):
+#         def new_func(*args, **kwargs):
+#             r = check_random_state(self.random_state)
+#             ptr = get_np_state_ptr()
+#             _copy_np_state(r, ptr)
+#             out = func(*args, **kwargs)
+#             _copyback_np_state(r, ptr)
+#             return out
+#         return new_func
 
 
 # def use_numba_random(func):

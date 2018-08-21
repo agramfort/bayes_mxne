@@ -12,14 +12,9 @@ from numba import njit, float64
 from mne.inverse_sparse.mxne_optim import groups_norm2
 
 from .pyrtnorm import rtnorm
-from .utils_random import check_random_state, use_numba_random
+from .utils_random import check_random_state
 from .utils_random import _copy_np_state, _copyback_np_state, \
     get_np_state_ptr
-
-# from pyrtnorm import rtnorm
-# from utils_random import check_random_state, use_numba_random
-# from utils_random import _copy_np_state, _copyback_np_state, \
-#     get_np_state_ptr
 
 
 @njit(float64(float64, float64), nogil=True)
@@ -211,12 +206,6 @@ if __name__ == '__main__':
     beta = 1.
     coupling = 1.
     couplings = coupling * np.ones(size)
-
-    # gammas = _cond_gamma_hyperprior_sampler(couplings[:1], beta, 42)
-    # print(np.sum(gammas))
-
-    # gammas = _cond_gamma_hyperprior_sampler(couplings[:1], beta, 42)
-    # print(np.sum(gammas))
 
     import time
     t0 = time.time()
