@@ -1,6 +1,12 @@
 Mixed-norms and HBMs for the M/EEG inverse problem
 ==================================================
 
+|Travis|_
+
+.. |Travis| image:: https://api.travis-ci.org/agramfort/bayes_mxne.svg?branch=master
+.. _Travis: https://travis-ci.org/agramfort/bayes_mxne
+
+
 This repository hosts the code to solve the M/EEG inverse problem. It improves the majorization-minimization (MM) techniques by probing the multimodal posterior density using Markov Chain Monte-Carlo (MCMC) techniques applied to Hierarchical Bayesian models (HBM).
 
 More details in **[1]** to see how this method reveals the different modes of the posterior distribution in order to explore and quantify the inherent uncertainty and ambiguity of such ill-posed inference procedure. In the context of M/EEG, each mode corresponds to a plausible configuration of neural sources, which is crucial for data interpretation, especially in clinical contexts.
