@@ -87,7 +87,7 @@ html_theme_options = {
     'navbar_sidebarrel': False,
     'navbar_links': [
         ("Examples", "auto_examples/index"),
-        ("GitHub", "https://github.com/yousrabk/bayes_mxne", True)
+        ("GitHub", "https://github.com/agramfort/bayes_mxne", True)
     ],
     'bootswatch_theme': "united"
 }
