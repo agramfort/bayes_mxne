@@ -12,7 +12,11 @@ Created on Mon Aug 12 13:48:22 2013
 from scipy.special import erf
 from numpy import sqrt, pi, exp, log, floor, array
 import numpy as np
-from numba import jit, float64
+from numba import njit, float64
+
+# from utils_random import _copy_np_state, _copyback_np_state, \
+from .utils_random import _copy_np_state, _copyback_np_state, \
+    check_random_state, get_np_state_ptr
 
 # Tables
 x = array([
@@ -2019,7 +2023,7 @@ yu = array([
     0.00958924947315, 0.00894144061242, 0.00828926090091, 0.00763259551896,
     0.00697135089651, 0.00630547338383, 0.00563498133279, 0.00496002177703,
     0.00428097439553, 0.00359865177269, 0.00291471045349, 0.00223256762114,
-    0.00155968193081 ])
+    0.00155968193081])
 
 ncell = array([
     0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2,
@@ -2473,7 +2477,7 @@ ncell = array([
     4000 ])
 
 
-def rtnorm(a, b, mu=0., sigma=1., size=1, probabilities=False):
+def rtnorm(a, b, mu=0., sigma=1., size=1, probabilities=False, random_state=None):
     r"""
     Pseudorandom numbers from a truncated Gaussian distribution.
 
@@ -2519,8 +2523,7 @@ def rtnorm(a, b, mu=0., sigma=1., size=1, probabilities=False):
     see http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
     """
-    # rng = check_random_state(random_state)
-    # rng = np.random
+    rng = check_random_state(random_state)
 
     # Ensure these are floats for proper division values later on.
     mu = float(mu)
@@ -2534,11 +2537,22 @@ def rtnorm(a, b, mu=0., sigma=1., size=1, probabilities=False):
         b = (b-mu) / sigma
 
     # Generate the random variables
-    r = array([rtstdnorm(a, b, x) for _ in range(size)])
+
+    # Put the state of the numpy rng to Numba
+    ptr = get_np_state_ptr()
+    _copy_np_state(rng, ptr)
+
+    r = np.empty(size)
+    for k in range(size):
+        r[k] = rtstdnorm(a, b, x)
+
+    # Update the state of the numpy rng from Numba rng stae
+    _copyback_np_state(rng, ptr)
 
     # Scaling
     if not mu == 0. or not sigma == 1.:
-        r = r * sigma + mu
+        r *= sigma
+        r += mu
 
     # Compute the probabilities
     if probabilities:
@@ -2550,7 +2564,7 @@ def rtnorm(a, b, mu=0., sigma=1., size=1, probabilities=False):
         return r
 
 
-@jit(float64(float64, float64, float64[:]), nopython=True, nogil=True)
+@njit(float64(float64, float64, float64[:]), nogil=True)
 def rtstdnorm(a, b, x=x):
     r"""
     RTNORM    Pseudorandom numbers from a truncated (normalized) Gaussian
@@ -2559,6 +2573,8 @@ def rtstdnorm(a, b, x=x):
     # Left and right limits
     xmin = -2.00443204036
     xmax = 3.48672170399
+
+    rng = np.random
 
     r = 0.  # for Numba init
     # Check if a < b
@@ -2579,9 +2595,9 @@ def rtstdnorm(a, b, x=x):
             # uniformly distributed in (0, 1). The numpy version includes
             # the left border of the interval, so the numbers are drawn from
             # [0, 1). Hence use a low lower border.
-            # z = log(1 + np.random.uniform(low=1E-15)*expab)
-            # e = -log(np.random.uniform(low=1E-15))
-            tmp1, tmp2 = np.random.rand(), np.random.rand()
+            # z = log(1 + rng.uniform(low=1E-15)*expab)
+            # e = -log(rng.uniform(low=1E-15))
+            tmp1, tmp2 = rng.rand(), rng.rand()
             tmp1 = max(tmp1, 1e-15)
             tmp2 = max(tmp2, 1e-15)
             z = log(1 + tmp1*expab)
@@ -2593,7 +2609,7 @@ def rtstdnorm(a, b, x=x):
     elif a < xmin:
         stop = False
         while not stop:
-            r = np.random.randn()
+            r = rng.randn()
             stop = (r>=a) and (r<=b)
     # In other cases (xmin < a < xmax), use Chopin's algorithm
     else:
@@ -2623,8 +2639,8 @@ def rtstdnorm(a, b, x=x):
             expab = exp(-a*(b-a)) - 1
             z = e = 0.
             while not stop:
-                z = log( 1 + np.random.rand()*expab )
-                e = -log(np.random.rand())
+                z = log(1 + rng.rand()*expab)
+                e = -log(rng.rand())
                 stop = (twoasq*e > z**2)
             r = a - z/a
             return r
@@ -2632,12 +2648,12 @@ def rtstdnorm(a, b, x=x):
             # Sample integer between ka and kb
             # Note that while matlab randi has including border, for numpy the high
             # border is exclusive. Hence add one.
-            k = np.random.randint(low=ka, high=(kb+1))      # not: +1 due to index offset in Matlab
+            k = rng.randint(low=ka, high=(kb+1))      # not: +1 due to index offset in Matlab
             if k == N:
                 # Right tail
                 lbound = x[-1]
-                z = -log(np.random.rand())
-                e = -log(np.random.rand())
+                z = -log(rng.rand())
+                e = -log(rng.rand())
                 z = z / lbound
                 if (z**2 <= 2*e) and (z < b-lbound):
                     # Accept this proposition, otherwise reject
@@ -2645,10 +2661,10 @@ def rtstdnorm(a, b, x=x):
                     return r
             elif (k<=ka+2) or (k>=kb and b<xmax):
                 # Two leftmost and rightmost regions
-                sim = x[k] + (x[k+1]-x[k]) * np.random.rand()
+                sim = x[k] + (x[k+1]-x[k]) * rng.rand()
                 if (sim >= a) and (sim <= b):
                     # Accept this proposition, otherwise reject
-                    simy = yu[k]*np.random.rand()
+                    simy = yu[k]*rng.rand()
 
                     # Compute y_l from y_k
                     if k == 0:
@@ -2665,7 +2681,7 @@ def rtstdnorm(a, b, x=x):
                         return r
             else:
                 # All the other boxes
-                u = np.random.rand()
+                u = rng.rand()
                 simy = yu[k] * u
                 d = x[k+1] - x[k]
 
@@ -2682,7 +2698,7 @@ def rtstdnorm(a, b, x=x):
                 if simy < ylk:  # That's what happens most of the time
                     r = x[k] + u*d*yu[k]/ylk
                     return r
-                sim = x[k] + d * np.random.rand()
+                sim = x[k] + d * rng.rand()
                 # Otherwise, check you're below the pdf curve
                 if sim**2 + 2*log(simy) + ALPHA < 0:
                     r = sim
@@ -2695,10 +2711,10 @@ if __name__ == '__main__':
 
     a, b = -2., 2.
     random_state = 42
-
     from time import time
     t0 = time()
-    r = rtnorm(a, b, mu=0., sigma=1., size=10000)
+    rng = np.random.RandomState(42)
+    r = rtnorm(a, b, mu=0., sigma=1., size=10000, random_state=rng)
     print(time() - t0)
 
     plt.close('all')

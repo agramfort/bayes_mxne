@@ -7,14 +7,22 @@
 from math import log, sqrt, log1p, exp
 import numpy as np
 from scipy import linalg
-from numba import jit, float64
+from numba import njit, float64
 
 from mne.inverse_sparse.mxne_optim import groups_norm2
 
 from .pyrtnorm import rtnorm
+from .utils_random import check_random_state, use_numba_random
+from .utils_random import _copy_np_state, _copyback_np_state, \
+    get_np_state_ptr
+
+# from pyrtnorm import rtnorm
+# from utils_random import check_random_state, use_numba_random
+# from utils_random import _copy_np_state, _copyback_np_state, \
+#     get_np_state_ptr
 
 
-@jit(float64(float64, float64), nopython=True, nogil=True)
+@njit(float64(float64, float64), nogil=True)
 def _cond_gamma_hyperprior_sampler_aux(coupling, beta):
     # compute maximal value
     if coupling == 0:
@@ -54,29 +62,42 @@ def _cond_gamma_hyperprior_sampler_aux(coupling, beta):
     return gamma
 
 
-def _cond_gamma_hyperprior_sampler(coupling, beta):
+def _cond_gamma_hyperprior_sampler(coupling, beta, random_state=None):
     r"""Sample from distribution of the form
 
     p(gamma) \prop exp(- coupling / gamma) exp(- gamma / beta)
     """
+    rng = check_random_state(random_state)
+    hyperprior_sample = _cond_gamma_hyperprior_sampler_aux
+
+    # Put the state of the numpy rng to Numba
+    ptr = get_np_state_ptr()
+    _copy_np_state(rng, ptr)
+
+    # hyperprior_sample = \
+    #     use_numba_random(random_state)(_cond_gamma_hyperprior_sampler_aux)
     if isinstance(coupling, float):
-        gamma = _cond_gamma_hyperprior_sampler_aux(coupling, beta)
+        gamma = hyperprior_sample(coupling, beta)
     else:
         gamma = np.empty(len(coupling))
         for i in range(len(coupling)):
-            gamma[i] = _cond_gamma_hyperprior_sampler_aux(coupling[i], beta)
+            gamma[i] = hyperprior_sample(coupling[i], beta)
+
+    # Update the state of the numpy rng from Numba rng stae
+    _copyback_np_state(rng, ptr)
 
     return gamma
 
 
-def _sc_slice_sampler(a, b, c, d, x0, n_samples):
+def _sc_slice_sampler(a, b, c, d, x0, n_samples, random_state):
     r"""Sample from
 
     p(x) \prop exp(-a x^2 + b x - c \sqrt{x^2 + d})
     """
+    rng = check_random_state(random_state)
     if not(a == 0 and b == 0):
         sigma = 1. / sqrt(2. * a)
-        mu = b / (2 * a)
+        mu = b / (2. * a)
     else:
         raise ValueError('this should not happen')
 
@@ -85,14 +106,15 @@ def _sc_slice_sampler(a, b, c, d, x0, n_samples):
         # sample aux variable y
         log_gy = -c * (sqrt(x**2 + d))
 
-        t = np.random.rand()
+        t = rng.rand()
         log_y = log_gy + log(t)
 
         # solve for xi
         xi = sqrt((-log_y / c)**2 - d)
 
         if xi > 0:  # otherwise, there is no interval to sample from
-            x = rtnorm(a=-xi, b=xi, mu=mu, sigma=sigma, size=1)
+            x = rtnorm(a=-xi, b=xi, mu=mu, sigma=sigma, size=1,
+                       random_state=random_state)
         else:
             x = 0
 
@@ -101,9 +123,11 @@ def _sc_slice_sampler(a, b, c, d, x0, n_samples):
 
 def _L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
                                   n_samples, sc_n_samples=10,
-                                  ss_n_samples=200, verbose=False):
+                                  ss_n_samples=200,
+                                  random_state=None,
+                                  verbose=False):
     # XXX : add docstring
-    rng = np.random.RandomState(42)
+    rng = check_random_state(random_state)
     n_dipoles = G.shape[1]
     n_locations = n_dipoles // n_orient
     _, n_times = M.shape
@@ -154,7 +178,7 @@ def _L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
                         d = XLocSqNorm - XjComp**2
                         # call slice sampler
                         XjComp = _sc_slice_sampler(
-                            a, b, c, d, XjComp, ss_n_samples)
+                            a, b, c, d, XjComp, ss_n_samples, rng)
                         # update auxillary variables
                         XLocSqNorm = d + XjComp**2
                         X[jComp, jTime] = XjComp
@@ -169,7 +193,7 @@ def _L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
         # update gamma by umbrella sampler
         # Compute the amplitudes of the sources for one hyperparameter
         XBlkNorm = np.sqrt(groups_norm2(X.copy(), n_orient))
-        gammas = _cond_gamma_hyperprior_sampler(XBlkNorm, beta)
+        gammas = _cond_gamma_hyperprior_sampler(XBlkNorm, beta, rng)
 
         # store results
         if k >= 0:
@@ -188,7 +212,11 @@ if __name__ == '__main__':
     coupling = 1.
     couplings = coupling * np.ones(size)
 
-    gammas = _cond_gamma_hyperprior_sampler(couplings[:1], beta)
+    # gammas = _cond_gamma_hyperprior_sampler(couplings[:1], beta, 42)
+    # print(np.sum(gammas))
+
+    # gammas = _cond_gamma_hyperprior_sampler(couplings[:1], beta, 42)
+    # print(np.sum(gammas))
 
     import time
     t0 = time.time()

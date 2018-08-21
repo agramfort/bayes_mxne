@@ -49,7 +49,7 @@ def test_mm_mixed_norm_bayes():
     # Define the regularization parameter and run the solver
     lambda_max = norm_l2inf(np.dot(G.T, M), n_orient)
     lambda_ref = 0.3 * lambda_max
-    K = 500
+    K = 10
     random_state = 0  # set random seed to make results replicable
     out = mm_mixed_norm_bayes(
         M, G, lambda_ref, n_orient=n_orient, K=K, return_lpp=True,
@@ -65,7 +65,6 @@ def test_mm_mixed_norm_bayes():
     assert block_norm_samples.shape == (K,)
     assert lppMAP.shape == (K,)
 
-    K = 100
     out = mm_mixed_norm_bayes(
         M, G, lambda_ref, n_orient=n_orient, K=K, return_samples=True,
         random_state=random_state)
@@ -73,10 +72,10 @@ def test_mm_mixed_norm_bayes():
     (Xs, active_sets), (X_samples, gamma_samples) = out
 
     freq_occ = np.mean(active_sets, axis=0)
-    assert_equal(np.argsort(freq_occ)[-2:], [12, 5])
+    assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
     assert lpp_samples.shape == (K,)
     assert rel_res_samples.shape == (K,)
     assert block_norm_samples.shape == (K,)
     assert lppMAP.shape == (K,)
-    assert X_samples.shape == (n_features, K)
-    assert gamma_samples.shape == (n_features, K)
+    assert X_samples.shape == (K, n_features, n_times, 2)
+    assert gamma_samples.shape == (K, n_features, 2)

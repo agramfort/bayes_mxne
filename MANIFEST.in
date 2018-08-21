@@ -1,0 +1,18 @@
+include *.rst
+include LICENSE
+include bayes_mxne/__init__.py
+
+recursive-include examples *.py
+recursive-include examples *.txt
+
+recursive-include bayes_mxne *.py
+
+### Exclude
+
+exclude Makefile
+exclude .coveragerc
+exclude *.yml
+exclude .mailmap
+recursive-exclude bayes_mxne *.pyc
+
+recursive-exclude doc *

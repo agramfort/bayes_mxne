@@ -11,6 +11,7 @@ from mne.inverse_sparse.mxne_optim import (mixed_norm_solver,
                                            groups_norm2)
 
 from .samplers import _L21_gamma_hypermodel_sampler
+from .pyrtnorm import check_random_state
 
 
 # The L21GammaHyperModelOptimizer
@@ -185,8 +186,8 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         list of all active sets of each solution
     XXX : fix given the return_samples and return_lpp
     """
-    if random_state is not None:
-        np.random.seed(random_state)
+    rng = check_random_state(random_state)
+
     n_locations = G.shape[1] // n_orient
     n_times = M.shape[1]
 
@@ -225,7 +226,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
             M, G, X0=X_sample[:, :, -1], gammas=gamma_sample[:, -1],
             n_orient=n_orient, beta=b, n_burnin=n_burnin,
             n_samples=2, sc_n_samples=scK, ss_n_samples=ssK,
-            verbose=verbose)
+            random_state=rng, verbose=verbose)
 
         # compute new full-MAP estimate
         X_new_MAP[k], as_new_MAP[k], gamma_new_MAP, energy[k], _ = \
@@ -257,7 +258,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         As.append(as_new_MAP[k])
         if return_samples:
             X_samples.append(X_sample)
-            gamma_samples.append(gamma_samples)
+            gamma_samples.append(gamma_sample)
 
     out = Xs, np.array(As)
     if return_lpp:
