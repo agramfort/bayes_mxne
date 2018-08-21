@@ -52,7 +52,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="index.html">Examples</a></li>
-                <li><a href="https://github.com/yousrabk/bayes_mxne">GitHub</a></li>
+                <li><a href="https://github.com/agramfort/bayes_mxne">GitHub</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -134,8 +134,7 @@ of the source localization.</p>
     <span class="p">(</span><span class="n">_prepare_gain</span><span class="p">,</span> <span class="n">is_fixed_orient</span><span class="p">,</span> <span class="n">_make_sparse_stc</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.inverse_sparse.mxne_optim</span> <span class="kn">import</span> <span class="n">norm_l2inf</span>
 
-<span class="kn">from</span> <span class="nn">bayes_mxne.gamma_hypermodel_optimizer</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mm_mixed_norm_bayes</span><span class="p">,</span>
-                                                   <span class="n">compute_block_norms</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bayes_mxne</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mm_mixed_norm_bayes</span><span class="p">,</span><span class="n">compute_block_norms</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">bayes_mxne.config_plots</span> <span class="kn">import</span> <span class="n">energy_l2half_reg</span><span class="p">,</span> <span class="n">circular_brain_plot</span>
 </pre></div>
 </div>
@@ -189,10 +188,9 @@ to the forward, the evoked and the covariance matrix.</p>
 
     <span class="n">lambda_ref</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">lambda_max</span>
 
-    <span class="n">out</span> <span class="o">=</span> <span class="n">mm_mixed_norm_bayes</span><span class="p">(</span>
-        <span class="n">M</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">n_orient</span><span class="o">=</span><span class="n">n_orient</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">return_lpp</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-    <span class="p">(</span><span class="n">Xs</span><span class="p">,</span> <span class="n">active_sets</span><span class="p">),</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="n">Xs</span><span class="p">,</span> <span class="n">active_sets</span> <span class="o">=</span> <span class="n">mm_mixed_norm_bayes</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">n_orient</span><span class="o">=</span><span class="n">n_orient</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="n">solution_support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">K</span><span class="p">,</span> <span class="n">n_locations</span><span class="p">))</span>
     <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
@@ -223,76 +221,98 @@ to the forward, the evoked and the covariance matrix.</p>
 <div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
 <span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
 <span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
-<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">84</span>
+<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">91</span>
+<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">11</span>
+<span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">8</span>
+<span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">8</span>
+<span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
+<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
+<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
+<span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
+<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
+<span class="n">sample</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">398304.5439423364</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.1801381642906867</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">797.9488729955079</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.6965741620194833</span>
+<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
+<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
+<span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
+<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">120</span>
 <span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">12</span>
 <span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">8</span>
 <span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
-<span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
-<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="n">sample</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">397956.80746715365</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.1599679302090715</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">791.0515656606742</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.7018439306255114</span>
-<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
-<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
-<span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
-<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">110</span>
-<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">12</span>
-<span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">9</span>
-<span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
-<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
+<span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
+<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
 <span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="n">sample</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">480038.37679683964</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.3287710867142954</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">747.8268541936736</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.713549821491845</span>
-<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
-<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
-<span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
-<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">113</span>
-<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">11</span>
-<span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
-<span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
-<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">3</span>
-<span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">3</span>
 <span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">3</span>
-<span class="n">sample</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">531896.5568347392</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.3993720715597804</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">742.0679159076859</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.7248672566935047</span>
+<span class="n">sample</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">482231.64120754995</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.3314875497004612</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">749.8656178875016</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.7301319299084807</span>
 <span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
 <span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
 <span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
-<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">104</span>
-<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">12</span>
-<span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
+<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">117</span>
+<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">11</span>
+<span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">8</span>
 <span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
 <span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
 <span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
 <span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
 <span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="n">sample</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">570591.4582464688</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.4362021934239206</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">756.5508547757535</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.7076956844285733</span>
+<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">3</span>
+<span class="n">sample</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">536030.6259261724</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.4131300090525265</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">742.6744146823053</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.724258794805546</span>
 <span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
 <span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
 <span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
-<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">119</span>
-<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">11</span>
+<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">126</span>
+<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">9</span>
+<span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="n">sample</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">576014.055157692</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.439309582541763</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">765.936390416088</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.7057898876406973</span>
+<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">0</span>
+<span class="n">Running</span> <span class="nb">iter</span> <span class="mi">1</span>
+<span class="nb">iter</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7498</span>
+<span class="nb">iter</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">130</span>
+<span class="nb">iter</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">10</span>
 <span class="nb">iter</span> <span class="mi">3</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">8</span>
-<span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">7</span>
+<span class="nb">iter</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
 <span class="nb">iter</span> <span class="mi">5</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
-<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">4</span>
-<span class="n">sample</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">601781.7809723571</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.490956226717366</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">759.3391236552872</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.7173077037606997</span>
+<span class="nb">iter</span> <span class="mi">6</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">6</span>
+<span class="nb">iter</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="nb">iter</span> <span class="mi">9</span> <span class="o">-</span> <span class="n">active</span> <span class="nb">set</span> <span class="mi">5</span>
+<span class="n">sample</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">lppSamp</span> <span class="o">-</span><span class="mf">607746.073836598</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">2.4919080067238566</span> <span class="o">-</span> <span class="n">lppMAP</span> <span class="o">-</span><span class="mf">765.2909101492836</span> <span class="o">-</span> <span class="n">relResSamp</span> <span class="mf">0.692353075307028</span>
 </pre></div>
 </div>
 <p>Plotting of all configurations intro a circular plot</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">circular_brain_plot</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span> <span class="n">solution_support</span><span class="p">,</span> <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_sample_circular_brain_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_sample_circular_brain_001.png" />
-<p><strong>Total running time of the script:</strong> ( 663 minutes  33.778 seconds)</p>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../_images/sphx_glr_plot_sample_circular_brain_001.png" class="sphx-glr-multi-img first" src="../_images/sphx_glr_plot_sample_circular_brain_001.png" />
+</li>
+<li><img alt="../_images/sphx_glr_plot_sample_circular_brain_002.png" class="sphx-glr-multi-img first" src="../_images/sphx_glr_plot_sample_circular_brain_002.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+<span class="n">setting</span> <span class="n">roll</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 40 minutes  29.115 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_sample_circular_brain.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sample_circular_brain.py</span></code></a></div>

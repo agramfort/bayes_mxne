@@ -30,8 +30,7 @@ of the source localization.
         (_prepare_gain, is_fixed_orient, _make_sparse_stc)
     from mne.inverse_sparse.mxne_optim import norm_l2inf
 
-    from bayes_mxne.gamma_hypermodel_optimizer import (mm_mixed_norm_bayes,
-                                                       compute_block_norms)
+    from bayes_mxne import (mm_mixed_norm_bayes,compute_block_norms)
     from bayes_mxne.config_plots import energy_l2half_reg, circular_brain_plot
 
 
@@ -107,10 +106,9 @@ Run solver method
 
         lambda_ref = 0.1 * lambda_max
 
-        out = mm_mixed_norm_bayes(
-            M, gain, lambda_ref, n_orient=n_orient, K=K, return_lpp=True)
-
-        (Xs, active_sets), _, _, _, _ = out
+        Xs, active_sets = mm_mixed_norm_bayes(
+            M, gain, lambda_ref, n_orient=n_orient, K=K,
+            verbose=True)
 
         solution_support = np.zeros((K, n_locations))
         stcs, obj_fun = [], []
@@ -159,68 +157,68 @@ Apply the solver
     Running iter 0
     Running iter 1
     iter 0 - active set 7498
-    iter 1 - active set 84
+    iter 1 - active set 91
+    iter 2 - active set 11
+    iter 3 - active set 8
+    iter 4 - active set 8
+    iter 5 - active set 7
+    iter 6 - active set 7
+    iter 7 - active set 7
+    iter 8 - active set 7
+    iter 9 - active set 7
+    sample 0 - lppSamp -398304.5439423364 - relResSamp 2.1801381642906867 - lppMAP -797.9488729955079 - relResSamp 0.6965741620194833
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 120
     iter 2 - active set 12
     iter 3 - active set 8
     iter 4 - active set 7
-    iter 5 - active set 7
-    iter 6 - active set 6
-    iter 7 - active set 6
-    iter 8 - active set 6
-    iter 9 - active set 6
-    sample 0 - lppSamp -397956.80746715365 - relResSamp 2.1599679302090715 - lppMAP -791.0515656606742 - relResSamp 0.7018439306255114
-    Running iter 0
-    Running iter 1
-    iter 0 - active set 7498
-    iter 1 - active set 110
-    iter 2 - active set 12
-    iter 3 - active set 9
-    iter 4 - active set 6
-    iter 5 - active set 5
-    iter 6 - active set 4
-    iter 7 - active set 4
+    iter 5 - active set 6
+    iter 6 - active set 5
+    iter 7 - active set 5
     iter 8 - active set 4
-    iter 9 - active set 4
-    sample 1 - lppSamp -480038.37679683964 - relResSamp 2.3287710867142954 - lppMAP -747.8268541936736 - relResSamp 0.713549821491845
-    Running iter 0
-    Running iter 1
-    iter 0 - active set 7498
-    iter 1 - active set 113
-    iter 2 - active set 11
-    iter 3 - active set 7
-    iter 4 - active set 6
-    iter 5 - active set 5
-    iter 6 - active set 4
-    iter 7 - active set 3
-    iter 8 - active set 3
     iter 9 - active set 3
-    sample 2 - lppSamp -531896.5568347392 - relResSamp 2.3993720715597804 - lppMAP -742.0679159076859 - relResSamp 0.7248672566935047
+    sample 1 - lppSamp -482231.64120754995 - relResSamp 2.3314875497004612 - lppMAP -749.8656178875016 - relResSamp 0.7301319299084807
     Running iter 0
     Running iter 1
     iter 0 - active set 7498
-    iter 1 - active set 104
-    iter 2 - active set 12
-    iter 3 - active set 6
+    iter 1 - active set 117
+    iter 2 - active set 11
+    iter 3 - active set 8
     iter 4 - active set 4
     iter 5 - active set 4
     iter 6 - active set 4
     iter 7 - active set 4
     iter 8 - active set 4
-    iter 9 - active set 4
-    sample 3 - lppSamp -570591.4582464688 - relResSamp 2.4362021934239206 - lppMAP -756.5508547757535 - relResSamp 0.7076956844285733
+    iter 9 - active set 3
+    sample 2 - lppSamp -536030.6259261724 - relResSamp 2.4131300090525265 - lppMAP -742.6744146823053 - relResSamp 0.724258794805546
     Running iter 0
     Running iter 1
     iter 0 - active set 7498
-    iter 1 - active set 119
-    iter 2 - active set 11
+    iter 1 - active set 126
+    iter 2 - active set 9
+    iter 3 - active set 5
+    iter 4 - active set 5
+    iter 5 - active set 5
+    iter 6 - active set 5
+    iter 7 - active set 5
+    iter 8 - active set 5
+    iter 9 - active set 5
+    sample 3 - lppSamp -576014.055157692 - relResSamp 2.439309582541763 - lppMAP -765.936390416088 - relResSamp 0.7057898876406973
+    Running iter 0
+    Running iter 1
+    iter 0 - active set 7498
+    iter 1 - active set 130
+    iter 2 - active set 10
     iter 3 - active set 8
-    iter 4 - active set 7
+    iter 4 - active set 6
     iter 5 - active set 6
-    iter 6 - active set 4
-    iter 7 - active set 4
-    iter 8 - active set 4
-    iter 9 - active set 4
-    sample 4 - lppSamp -601781.7809723571 - relResSamp 2.490956226717366 - lppMAP -759.3391236552872 - relResSamp 0.7173077037606997
+    iter 6 - active set 6
+    iter 7 - active set 5
+    iter 8 - active set 5
+    iter 9 - active set 5
+    sample 4 - lppSamp -607746.073836598 - relResSamp 2.4919080067238566 - lppMAP -765.2909101492836 - relResSamp 0.692353075307028
 
 
 Plotting of all configurations intro a circular plot
@@ -233,13 +231,41 @@ Plotting of all configurations intro a circular plot
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_sample_circular_brain_001.png
-    :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
 
 
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_sample_circular_brain_001.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_plot_sample_circular_brain_002.png
+            :class: sphx-glr-multi-img
 
 
-**Total running time of the script:** ( 663 minutes  33.778 seconds)
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+    setting roll
+
+
+**Total running time of the script:** ( 40 minutes  29.115 seconds)
 
 
 
