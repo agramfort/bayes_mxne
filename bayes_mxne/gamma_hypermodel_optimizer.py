@@ -32,12 +32,12 @@ def _neg_log_post_prob(G, X, M, n_orient, gamma, alpha, beta, n_times):
     return nlpp, relRes
 
 
-def _log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
+def _log_posterior_prob(Xsamples, gammaChain, G, M, n_orient, beta):
     """Compute the log posterior probability.
 
     Parameters
     ----------
-    XChain : array, shape (n_dipoles, n_times, K)
+    Xsamples : array, shape (n_dipoles, n_times, K)
         The K samples on the chain.
     gammaChain : list
         list containing the chain of K gamma_samples.
@@ -52,35 +52,35 @@ def _log_posterior_prob(XChain, gammaChain, G, M, n_orient, beta):
 
     Returns
     -------
-    lpChain : array, shape (K,)
-        The data log-likelihood term for the K samples on the chain.
-        It boils down to the data fitting term.
-    relResChain : array, shape (K,)
+    lppSamples : array, shape (K,)
+        The log posterior probability of the samples. See eq (12)
+        in paper.
+    relResSamples : array, shape (K,)
         The Frobenius norms of the residuals for the K samples of the chain,
         normalized by the Frobenius norm of the data M.
-    blockNormChain : array, shape (K,)
+    blockNormSamples : array, shape (K,)
         The sum of the block norms for the K samples on the chain.
     """
-    K = XChain.shape[2]
-    lpChain = np.zeros((K,))
-    relResChain = np.zeros((K,))
-    blockNormChain = np.zeros((K,))
+    K = Xsamples.shape[2]
+    lppSamples = np.zeros((K,))
+    relResSamples = np.zeros((K,))
+    blockNormSamples = np.zeros((K,))
 
     normM = norm(M, 'fro')
 
     for i in range(K):
-        relResChain[i] = norm(np.dot(G, XChain[:, :, i]) - M, 'fro')
-        lpChain[i] = - 1. / 2 * relResChain[i] ** 2
-        relResChain[i] = relResChain[i] / normM
+        relResSamples[i] = norm(np.dot(G, Xsamples[:, :, i]) - M, 'fro')
+        lppSamples[i] = - 1. / 2 * relResSamples[i] ** 2
+        relResSamples[i] = relResSamples[i] / normM
         # XXX use np.sum ?
-        blockNormChain[i] = \
-            sum(compute_block_norms(XChain[:, :, i], n_orient))
-        XGammaRatio = compute_block_norms(XChain[:, :, i], n_orient) \
+        blockNormSamples[i] = \
+            sum(compute_block_norms(Xsamples[:, :, i], n_orient))
+        XGammaRatio = compute_block_norms(Xsamples[:, :, i], n_orient) \
             / gammaChain[:, i]
-        lpChain[i] -= sum(XGammaRatio[~np.isnan(XGammaRatio)])
-        lpChain[i] -= sum(gammaChain[:, i] / beta)
+        lppSamples[i] -= sum(XGammaRatio[~np.isnan(XGammaRatio)])
+        lppSamples[i] -= sum(gammaChain[:, i] / beta)
 
-    return lpChain, relResChain, blockNormChain
+    return lppSamples, relResSamples, blockNormSamples
 
 
 def _energy_l2half_reg(M, G, X, active_set, lambda_l2half, n_orient):
@@ -143,9 +143,8 @@ def _L21_gamma_hypermodel_optimizer(G, M, gamma, alpha, beta, n_orient,
 
 
 def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
-                        n_burnin=0, maxiter=10, return_lpp=False,
-                        return_samples=False, random_state=42,
-                        verbose=False):
+                        n_burnin=0, maxiter=10, return_samples=False,
+                        random_state=42, verbose=False):
     """Run MM solver with K MCMC samples as initilization.
 
     Parameters
@@ -168,8 +167,6 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         The number of samples in the burnin phase
     maxiter : int
         The number of interations in the L21 solver.
-    return_lpp : bool
-        It True the LPP is returned. XXX LPP?
     return_samples : bool
         If True, the samples on returned. XXX which samples?
     random_state : int | None
@@ -184,7 +181,23 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         list of all solutions using the K MCMC initilization
     As : list
         list of all active sets of each solution
-    XXX : fix given the return_samples and return_lpp
+    lppSamples : array, shape (K,)
+        The log posterior probability of the samples. See eq (12)
+        in paper.
+    relResSamples : array, shape (K,)
+        The relative residual norm for each norm. Useful to
+        see goodness of fit for every sample.
+    lppMAP : array, shape (K,)
+        The log posterior probability of the Xs obtained
+        after full-MAP estimation.
+    X_samples : array, shape (K, n_features, n_times, 2)
+        The X samples and gamma samples along the chain.
+        Warning this can be big.
+        Only returned if return_samples is True.
+    gamma_samples : array, shape (K, n_features, 2)
+        The X samples and gamma samples along the chain.
+        Warning this can be big.
+        Only returned if return_samples is True.
     """
     rng = check_random_state(random_state)
 
@@ -195,7 +208,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
     b = 4 / lambda_ref ** 2
 
     gamma_init = np.ones((n_locations,)) / lambda_ref
-    lambda_map = 1 / np.mean(gamma_init)
+    lambda_map = 1. / np.mean(gamma_init)
 
     # we start from the a uniform initilization and
     X_sample = np.zeros((G.shape[1], M.shape[1], 1))
@@ -260,9 +273,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
             X_samples.append(X_sample)
             gamma_samples.append(gamma_sample)
 
-    out = Xs, np.array(As)
-    if return_lpp:
-        out = out, (lppSamples, relResSamples, blockNormSamples, lppMAP)
+    out = Xs, np.array(As), lppSamples, relResSamples, blockNormSamples, lppMAP
     if return_samples:
-        out = out, (np.array(X_samples), np.array(gamma_samples))
+        out += (np.array(X_samples), np.array(gamma_samples))
     return out

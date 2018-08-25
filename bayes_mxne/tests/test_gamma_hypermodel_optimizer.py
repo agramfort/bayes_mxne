@@ -52,11 +52,11 @@ def test_mm_mixed_norm_bayes():
     K = 10
     random_state = 0  # set random seed to make results replicable
     out = mm_mixed_norm_bayes(
-        M, G, lambda_ref, n_orient=n_orient, K=K, return_lpp=True,
+        M, G, lambda_ref, n_orient=n_orient, K=K,
         random_state=random_state)
 
-    Xs, active_sets = out[0]
-    lpp_samples, rel_res_samples, block_norm_samples, lppMAP = out[1]
+    Xs, active_sets = out[:2]
+    lpp_samples, rel_res_samples, block_norm_samples, lppMAP = out[2:]
 
     freq_occ = np.mean(active_sets, axis=0)
     assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
@@ -69,7 +69,9 @@ def test_mm_mixed_norm_bayes():
         M, G, lambda_ref, n_orient=n_orient, K=K, return_samples=True,
         random_state=random_state)
 
-    (Xs, active_sets), (X_samples, gamma_samples) = out
+    Xs, active_sets = out[:2]
+    lpp_samples, rel_res_samples, block_norm_samples, lppMAP = out[2:-2]
+    X_samples, gamma_samples = out[-2:]
 
     freq_occ = np.mean(active_sets, axis=0)
     assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
