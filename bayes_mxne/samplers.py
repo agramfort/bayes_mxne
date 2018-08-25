@@ -121,6 +121,43 @@ def _L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
                                   ss_n_samples=200,
                                   random_state=None,
                                   verbose=False):
+    """Run Gamma sampler
+
+    Parameters
+    ----------
+    M : array, shape (n_samples, n_times)
+        The data.
+    G : array, shape (n_samples, n_features)
+        The forward operator / design matrix.
+    X0 : array, shape (n_features, n_times)
+        The initial X.
+    gammas : array, shape (n_locations, n_times)
+        The initial gammas.
+    n_orient : int
+        The number of orientation (1 : fixed or 3 : free or loose).
+        Used for M/EEG application as there is 3 features per
+        physical locations. We have n_locations = n_features // n_orient.
+    bela : float
+        The beta scale paraemter of the gamma distribution
+    n_burnin : int
+        The number of iterations in the burnin phase.
+    n_samples : int
+        The number of sampels to draw.
+    ss_n_samples : int
+        The number of samples in the slice sampler.
+    random_state : int | None
+        An integer to fix the seed of the numpy random number
+        generator. Necessary to have replicable results.
+    verbose : bool
+        If True print info on optimization.
+
+    Returns
+    -------
+    XChain : array, shape (n_features, n_times, n_samples)
+        The X samples along the chain.
+    gammaChain : array, shape (n_locations, n_samples)
+        The gamma samples along the chain.
+    """
     # XXX : add docstring
     rng = check_random_state(random_state)
     n_dipoles = G.shape[1]

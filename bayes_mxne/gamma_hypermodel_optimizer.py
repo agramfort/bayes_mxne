@@ -149,14 +149,16 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
 
     Parameters
     ----------
-    M : array, shape (n_sensors, n_times)
+    M : array, shape (n_samples, n_times)
         The data.
-    G : array, shape (n_sensors, n_dipoles)
+    G : array, shape (n_samples, n_features)
         The forward operator.
     lambda_ref : float
         Regularization parameter tau * lambda_max
     n_orient : int
         The number of orientation (1 : fixed or 3 : free or loose).
+        Used for M/EEG application as there is 3 features per
+        physical locations. We have n_locations = n_features // n_orient.
     K : int
         length of the MCMC chain
     scK : int
@@ -177,31 +179,31 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
 
     Returns
     -------
-    Xs : list
-        list of all solutions using the K MCMC initilization
-    As : list
-        list of all active sets of each solution
+    Xs : list of length K
+        Æll modes found with the K MCMC initilization.
+    As : ndarray, shape (K, n_features)
+        Active sets of modes found with the K MCMC initilization.
     lppSamples : array, shape (K,)
         The log posterior probability of the samples. See eq (12)
         in paper.
-    relResSamples : array, shape (K,)
-        The relative residual norm for each norm. Useful to
-        see goodness of fit for every sample.
     lppMAP : array, shape (K,)
         The log posterior probability of the Xs obtained
         after full-MAP estimation.
+    pobj : array, shape (K,)
+        The primal objective solved by MM solver.
     X_samples : array, shape (K, n_features, n_times, 2)
-        The X samples and gamma samples along the chain.
+        The X samples along the chain.
         Warning this can be big.
         Only returned if return_samples is True.
     gamma_samples : array, shape (K, n_features, 2)
-        The X samples and gamma samples along the chain.
+        The gamma samples along the chain.
         Warning this can be big.
         Only returned if return_samples is True.
     """
     rng = check_random_state(random_state)
 
-    n_locations = G.shape[1] // n_orient
+    n_features = G.shape[1]
+    n_locations = n_features // n_orient
     n_times = M.shape[1]
 
     a = n_orient * n_times + 1
@@ -221,14 +223,14 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
     relResMAP = np.zeros((K,))
     blockNormMAP = np.zeros((K,))
     solution_support = np.zeros((K, n_locations))
-    _energy_l2half_reg_vec = np.zeros((K,))
+    pobj_l2half = np.zeros((K,))
 
     X_new_MAP = {}
     as_new_MAP = {}
     energy = {}
 
-    Xs = []
-    As = []
+    Xs = list()
+    As = np.empty((K, n_features), dtype=bool)
     X_samples = []
     gamma_samples = []
 
@@ -260,7 +262,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
         block_norms_new = (block_norms_new > 0.05 * block_norms_new.max())
         solution_support[k, :] = block_norms_new
 
-        _energy_l2half_reg_vec[k] = _energy_l2half_reg(
+        pobj_l2half[k] = _energy_l2half_reg(
             M, G, X_new_MAP[k][as_new_MAP[k]], as_new_MAP[k], lambda_ref,
             n_orient)
         if verbose:
@@ -268,12 +270,13 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
                   "relResSamp %s" % (k, lppSamples[k], relResSamples[k],
                                      lppMAP[k], relResMAP[k]))
         Xs.append(X_new_MAP[k][as_new_MAP[k]])
-        As.append(as_new_MAP[k])
+        As[k] = as_new_MAP[k]
         if return_samples:
             X_samples.append(X_sample)
             gamma_samples.append(gamma_sample)
 
-    out = Xs, np.array(As), lppSamples, relResSamples, blockNormSamples, lppMAP
+    # out = Xs, As, lppSamples, relResSamples, blockNormSamples, lppMAP
+    out = Xs, As, lppSamples, lppMAP, pobj_l2half
     if return_samples:
         out += (np.array(X_samples), np.array(gamma_samples))
     return out

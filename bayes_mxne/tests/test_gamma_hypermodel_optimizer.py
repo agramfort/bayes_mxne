@@ -56,13 +56,13 @@ def test_mm_mixed_norm_bayes():
         random_state=random_state)
 
     Xs, active_sets = out[:2]
-    lpp_samples, rel_res_samples, block_norm_samples, lppMAP = out[2:]
+    lpp_samples, lppMAP, pobj_l2half = out[2:]
 
     freq_occ = np.mean(active_sets, axis=0)
     assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
+    assert len(Xs) == K
     assert lpp_samples.shape == (K,)
-    assert rel_res_samples.shape == (K,)
-    assert block_norm_samples.shape == (K,)
+    assert pobj_l2half.shape == (K,)
     assert lppMAP.shape == (K,)
 
     out = mm_mixed_norm_bayes(
@@ -70,14 +70,14 @@ def test_mm_mixed_norm_bayes():
         random_state=random_state)
 
     Xs, active_sets = out[:2]
-    lpp_samples, rel_res_samples, block_norm_samples, lppMAP = out[2:-2]
+    lpp_samples, lppMAP, pobj_l2half = out[2:-2]
     X_samples, gamma_samples = out[-2:]
 
     freq_occ = np.mean(active_sets, axis=0)
     assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
+    assert len(Xs) == K
     assert lpp_samples.shape == (K,)
-    assert rel_res_samples.shape == (K,)
-    assert block_norm_samples.shape == (K,)
+    assert pobj_l2half.shape == (K,)
     assert lppMAP.shape == (K,)
     assert X_samples.shape == (K, n_features, n_times, 2)
     assert gamma_samples.shape == (K, n_features, 2)

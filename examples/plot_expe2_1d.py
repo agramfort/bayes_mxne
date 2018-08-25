@@ -1,7 +1,7 @@
 """
-======================================================
-Example 1: Show relative frequencies with a 1d problem
-======================================================
+=========================================================
+Experiment 2: Show relative frequencies with a 1d problem
+=========================================================
 
 While the posterior mode whose support coincided with that of the true
 solution was also found with the highest relative frequency, it is not clear
@@ -39,6 +39,7 @@ import numpy as np
 from scipy.linalg.special_matrices import toeplitz
 import matplotlib.pyplot as plt
 
+from mne.inverse_sparse.mxne_optim import iterative_mixed_norm_solver
 from bayes_mxne import mm_mixed_norm_bayes
 from bayes_mxne.utils import unique_rows
 
@@ -53,8 +54,7 @@ n_features = 20
 n_samples = 10
 n_times = 1
 lambda_percent = 50.
-K = 10000
-K0 = K
+K = 5000
 
 X_true = np.zeros((n_features, n_times))
 # Active sources at indices 10 and 30
@@ -85,13 +85,21 @@ M += 0.2 * np.max(np.abs(M)) * rng.randn(n_samples, n_times)
 ###############################################################################
 # Define the regularization parameter and run the solver
 # ------------------------------------------------------
+
 lambda_max = np.max(np.linalg.norm(np.dot(G.T, M), axis=1))
 lambda_ref = lambda_percent / 100. * lambda_max
 
-Xs, active_sets, lpp_samples, _, _, lpp_Xs = \
-    mm_mixed_norm_bayes(M, G, lambda_ref, K=K)
+X_mm, active_set_mm, _ = \
+    iterative_mixed_norm_solver(M, G, lambda_ref, n_mxne_iter=10)
 
-freq_occ = np.mean(active_sets, axis=0)
+print("Found support: %s" % np.where(active_set_mm)[0])
+
+###############################################################################
+# Run the solver
+# --------------
+
+Xs, active_sets, lpp_samples, lpp_Xs, pobj_l2half_Xs = \
+    mm_mixed_norm_bayes(M, G, lambda_ref, K=K)
 
 # we plot the log posterior probability to check when the sampler reached
 # its statinary phase
@@ -101,14 +109,9 @@ plt.plot(lpp_Xs, label='log post. prob. Xs (full MAP)')
 plt.xlabel('Samples')
 plt.legend()
 
-# Plot if we found better local minima then the first result found be the
-# plain MM algo
-# plt.figure()
-# XXX TODO
-
 ###############################################################################
-# Plot the supports
-# -----------------
+# Plot the frequency of the supports
+# ----------------------------------
 
 unique_supports = unique_rows(active_sets)
 n_modes = len(unique_supports)
@@ -135,6 +138,5 @@ plt.yticks(range(n_modes), ["%2.1f%%" % (100 * f,) for f in frequency])
 plt.ylabel("Support Freqency")
 plt.xlabel('Features')
 plt.grid('on', alpha=0.5)
-plt.show()
-
+plt.gca().xaxis.set_ticks_position('bottom')
 plt.show()
