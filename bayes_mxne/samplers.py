@@ -158,7 +158,6 @@ def _L21_gamma_hypermodel_sampler(M, G, X0, gammas, n_orient, beta, n_burnin,
     gammaChain : array, shape (n_locations, n_samples)
         The gamma samples along the chain.
     """
-    # XXX : add docstring
     rng = check_random_state(random_state)
     n_dipoles = G.shape[1]
     n_locations = n_dipoles // n_orient

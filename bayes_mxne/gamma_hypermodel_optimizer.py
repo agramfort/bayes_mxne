@@ -72,9 +72,8 @@ def _log_posterior_prob(Xsamples, gammaChain, G, M, n_orient, beta):
         relResSamples[i] = norm(np.dot(G, Xsamples[:, :, i]) - M, 'fro')
         lppSamples[i] = - 1. / 2 * relResSamples[i] ** 2
         relResSamples[i] = relResSamples[i] / normM
-        # XXX use np.sum ?
         blockNormSamples[i] = \
-            sum(compute_block_norms(Xsamples[:, :, i], n_orient))
+            np.sum(compute_block_norms(Xsamples[:, :, i], n_orient))
         XGammaRatio = compute_block_norms(Xsamples[:, :, i], n_orient) \
             / gammaChain[:, i]
         lppSamples[i] -= sum(XGammaRatio[~np.isnan(XGammaRatio)])
