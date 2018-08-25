@@ -13,13 +13,13 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates the difficulty to recover sources which have stronger correlation bet...">
+    <div class="sphx-glr-thumbcontainer" tooltip="While the posterior mode whose support coincided with that of the true solution was also found ...">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_demo_toy_problem_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_expe2_1d_thumb.png
 
-        :ref:`sphx_glr_auto_examples_plot_demo_toy_problem.py`
+        :ref:`sphx_glr_auto_examples_plot_expe2_1d.py`
 
 .. raw:: html
 
@@ -29,7 +29,27 @@ Examples Gallery
 .. toctree::
    :hidden:
 
-   /auto_examples/plot_demo_toy_problem
+   /auto_examples/plot_expe2_1d
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example aims to illustrate the difficulty to recover sources in the presence of stronger c...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_expe1_1d_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_expe1_1d.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_expe1_1d
 
 .. raw:: html
 

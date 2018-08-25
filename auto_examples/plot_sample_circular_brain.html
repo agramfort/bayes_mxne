@@ -134,8 +134,10 @@ of the source localization.</p>
     <span class="p">(</span><span class="n">_prepare_gain</span><span class="p">,</span> <span class="n">is_fixed_orient</span><span class="p">,</span> <span class="n">_make_sparse_stc</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.inverse_sparse.mxne_optim</span> <span class="kn">import</span> <span class="n">norm_l2inf</span>
 
-<span class="kn">from</span> <span class="nn">bayes_mxne</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mm_mixed_norm_bayes</span><span class="p">,</span><span class="n">compute_block_norms</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bayes_mxne</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mm_mixed_norm_bayes</span><span class="p">,</span> <span class="n">compute_block_norms</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">bayes_mxne.config_plots</span> <span class="kn">import</span> <span class="n">energy_l2half_reg</span><span class="p">,</span> <span class="n">circular_brain_plot</span>
+
+<span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Let us read in the <cite>fif</cite> file for MNE sample dataset corresponding
@@ -190,7 +192,7 @@ to the forward, the evoked and the covariance matrix.</p>
 
     <span class="n">Xs</span><span class="p">,</span> <span class="n">active_sets</span> <span class="o">=</span> <span class="n">mm_mixed_norm_bayes</span><span class="p">(</span>
         <span class="n">M</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">n_orient</span><span class="o">=</span><span class="n">n_orient</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="n">solution_support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">K</span><span class="p">,</span> <span class="n">n_locations</span><span class="p">))</span>
     <span class="n">stcs</span><span class="p">,</span> <span class="n">obj_fun</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
@@ -312,7 +314,7 @@ to the forward, the evoked and the covariance matrix.</p>
 <span class="n">setting</span> <span class="n">roll</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 40 minutes  29.115 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 34 minutes  24.499 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_sample_circular_brain.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sample_circular_brain.py</span></code></a></div>

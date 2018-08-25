@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Experiment 2: Show relative frequencies with a 1d problem &#8212; bayes_mxne  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          bayes_mxne</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="https://github.com/agramfort/bayes_mxne">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Experiment 2: Show relative frequencies with a 1d problem</a><ul>
+<li><a class="reference internal" href="#construction-of-simulated-data">Construction of simulated data</a></li>
+<li><a class="reference internal" href="#define-the-regularization-parameter-and-run-the-solver">Define the regularization parameter and run the solver</a></li>
+<li><a class="reference internal" href="#run-the-solver">Run the solver</a></li>
+<li><a class="reference internal" href="#plot-the-frequency-of-the-supports">Plot the frequency of the supports</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/plot_expe2_1d.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="experiment-2-show-relative-frequencies-with-a-1d-problem">
+<span id="sphx-glr-auto-examples-plot-expe2-1d-py"></span><h1>Experiment 2: Show relative frequencies with a 1d problem<a class="headerlink" href="#experiment-2-show-relative-frequencies-with-a-1d-problem" title="Permalink to this headline">¶</a></h1>
+<p>While the posterior mode whose support coincided with that of the true
+solution was also found with the highest relative frequency, it is not clear
+whether this frequency is a reliable indication of the mode’s true relative
+posterior mass. In general, this question is difficult to examine for high
+dimensional problems. Nonetheless, here we constructed an example to at least
+show that the frequencies are consistent: we now draw the rows of a 10 × 10
+matrix G from a Gaussian distribution with zero mean and the covariance matrix
+(Toeplitz with 0.95 correlation).</p>
+<p>Then, we set G = [G, G], i.e. the first and last 10 columns of G are exactly
+the same. This means that the regression problem (1) and the posterior
+distribution are invariant with respect to switching the first and last 10
+entries. Every mode has a corresponding copy ‘on the other side’, which should
+be found with the same relative frequency.</p>
+<p>The example aims to replicate experiment 2 in the paper and the figure 4.</p>
+<p>Reference:</p>
+<p>[1] Bekhti, Y., Lucka, F., Salmon, J., &amp; Gramfort, A. (2018). A hierarchical
+Bayesian perspective on majorization-minimization for non-convex sparse
+regression: application to M/EEG source imaging. Inverse Problems, Volume 34,
+Number 8.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Authors: Yousra Bekhti &lt;yousra.bekhti@gmail.com&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@inria.fr&gt;</span>
+<span class="c1">#          Felix Lucka &lt;f.lucka@ucl.ac.uk&gt;</span>
+
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg.special_matrices</span> <span class="kn">import</span> <span class="n">toeplitz</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">mne.inverse_sparse.mxne_optim</span> <span class="kn">import</span> <span class="n">iterative_mixed_norm_solver</span>
+<span class="kn">from</span> <span class="nn">bayes_mxne</span> <span class="kn">import</span> <span class="n">mm_mixed_norm_bayes</span>
+<span class="kn">from</span> <span class="nn">bayes_mxne.utils</span> <span class="kn">import</span> <span class="n">unique_rows</span>
+
+<span class="k">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="construction-of-simulated-data">
+<h2>Construction of simulated data<a class="headerlink" href="#construction-of-simulated-data" title="Permalink to this headline">¶</a></h2>
+<p>First we define the problem size and the location of the active sources.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">n_features</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">n_times</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lambda_percent</span> <span class="o">=</span> <span class="mf">50.</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">5000</span>
+
+<span class="n">X_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
+<span class="c1"># Active sources at indices 10 and 30</span>
+<span class="n">X_true</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">X_true</span><span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">1.</span>
+</pre></div>
+</div>
+<p>Construction of a covariance matrix</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># Set the correlation of each simulated source</span>
+<span class="n">corr</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="n">toeplitz</span><span class="p">(</span><span class="n">corr</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Simulation of the design matrix / forward operator</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">G</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cov</span><span class="p">)),</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># normalize columns</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Feature covariance&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_expe2_1d_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_expe2_1d_001.png" />
+<p>Simulation of the data with some noise</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X_true</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">+=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M</span><span class="p">))</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_times</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="define-the-regularization-parameter-and-run-the-solver">
+<h2>Define the regularization parameter and run the solver<a class="headerlink" href="#define-the-regularization-parameter-and-run-the-solver" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">lambda_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">lambda_ref</span> <span class="o">=</span> <span class="n">lambda_percent</span> <span class="o">/</span> <span class="mf">100.</span> <span class="o">*</span> <span class="n">lambda_max</span>
+
+<span class="n">X_mm</span><span class="p">,</span> <span class="n">active_set_mm</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> \
+    <span class="n">iterative_mixed_norm_solver</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">n_mxne_iter</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Found support: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">active_set_mm</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">Found</span> <span class="n">support</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-solver">
+<h2>Run the solver<a class="headerlink" href="#run-the-solver" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Xs</span><span class="p">,</span> <span class="n">active_sets</span><span class="p">,</span> <span class="n">lpp_samples</span><span class="p">,</span> <span class="n">lpp_Xs</span><span class="p">,</span> <span class="n">pobj_l2half_Xs</span> <span class="o">=</span> \
+    <span class="n">mm_mixed_norm_bayes</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">lambda_ref</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+
+<span class="c1"># we plot the log posterior probability to check when the sampler reached</span>
+<span class="c1"># its statinary phase</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lpp_samples</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log post. prob. chain samples&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lpp_Xs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;log post. prob. Xs (full MAP)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Samples&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_expe2_1d_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_expe2_1d_002.png" />
+</div>
+<div class="section" id="plot-the-frequency-of-the-supports">
+<h2>Plot the frequency of the supports<a class="headerlink" href="#plot-the-frequency-of-the-supports" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">unique_supports</span> <span class="o">=</span> <span class="n">unique_rows</span><span class="p">(</span><span class="n">active_sets</span><span class="p">)</span>
+<span class="n">n_modes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_supports</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Number of modes identified: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">n_modes</span><span class="p">)</span>
+
+<span class="c1"># Now get frequency of each support</span>
+<span class="n">frequency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_supports</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">support</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_supports</span><span class="p">):</span>
+    <span class="n">frequency</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">active_sets</span> <span class="o">!=</span>
+                                  <span class="n">support</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Sort supports by frequency</span>
+<span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">frequency</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">unique_supports</span> <span class="o">=</span> <span class="n">unique_supports</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+<span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+
+<span class="c1"># Plot support frequencies in a colorful way</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">unique_supports</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">C</span><span class="p">[</span><span class="n">C</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">spectral</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_modes</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%2.1f%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">f</span><span class="p">,)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">frequency</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Support Freqency&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Features&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s1">&#39;on&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_expe2_1d_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_expe2_1d_003.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">modes</span> <span class="n">identified</span><span class="p">:</span> <span class="mi">9</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 1 minutes  25.768 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_expe2_1d.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_expe2_1d.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_expe2_1d.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_expe2_1d.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Yousra Bekhti, Alex Gramfort, Felix Lucka and Joseph Salmon.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

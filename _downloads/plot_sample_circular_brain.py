@@ -22,8 +22,10 @@ from mne.inverse_sparse.mxne_inverse import \
     (_prepare_gain, is_fixed_orient, _make_sparse_stc)
 from mne.inverse_sparse.mxne_optim import norm_l2inf
 
-from bayes_mxne import (mm_mixed_norm_bayes,compute_block_norms)
+from bayes_mxne import (mm_mixed_norm_bayes, compute_block_norms)
 from bayes_mxne.config_plots import energy_l2half_reg, circular_brain_plot
+
+print(__doc__)
 
 ###############################################################################
 # Let us read in the `fif` file for MNE sample dataset corresponding
@@ -80,7 +82,7 @@ def apply_solver(evoked, forward, noise_cov, loose=0.2, depth=0.8, K=2000):
 
     Xs, active_sets = mm_mixed_norm_bayes(
         M, gain, lambda_ref, n_orient=n_orient, K=K,
-        verbose=True)
+        verbose=True)[:2]
 
     solution_support = np.zeros((K, n_locations))
     stcs, obj_fun = [], []
