@@ -95,6 +95,7 @@ for c in corr:
 cov = np.array(linalg.block_diag(*cov))
 
 plt.matshow(cov)
+plt.gca().xaxis.set_ticks_position('bottom')
 plt.title('True Covariance')
 
 ###############################################################################
@@ -102,6 +103,7 @@ plt.title('True Covariance')
 G = rng.multivariate_normal(np.zeros(n_features), cov, size=n_samples)
 
 plt.matshow(G.T.dot(G))
+plt.gca().xaxis.set_ticks_position('bottom')
 plt.title("Feature covariance")
 
 ###############################################################################
