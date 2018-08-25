@@ -179,7 +179,7 @@ def mm_mixed_norm_bayes(M, G, lambda_ref, n_orient=1, K=900, scK=1, ssK=1,
     Returns
     -------
     Xs : list of length K
-        Æll modes found with the K MCMC initilization.
+        All modes found with the K MCMC initilization.
     As : ndarray, shape (K, n_features)
         Active sets of modes found with the K MCMC initilization.
     lppSamples : array, shape (K,)
