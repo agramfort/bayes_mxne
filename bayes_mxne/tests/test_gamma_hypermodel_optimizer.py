@@ -59,7 +59,7 @@ def test_mm_mixed_norm_bayes():
     lpp_samples, lppMAP, pobj_l2half = out[2:]
 
     freq_occ = np.mean(active_sets, axis=0)
-    assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
+    assert_equal(np.argsort(freq_occ)[-2:], [9, 5])
     assert len(Xs) == K
     assert lpp_samples.shape == (K,)
     assert pobj_l2half.shape == (K,)
@@ -74,7 +74,7 @@ def test_mm_mixed_norm_bayes():
     X_samples, gamma_samples = out[-2:]
 
     freq_occ = np.mean(active_sets, axis=0)
-    assert_equal(np.argsort(freq_occ)[-2:], [10, 5])
+    assert_equal(np.argsort(freq_occ)[-2:], [9, 5])
     assert len(Xs) == K
     assert lpp_samples.shape == (K,)
     assert pobj_l2half.shape == (K,)
