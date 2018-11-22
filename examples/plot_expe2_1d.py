@@ -57,7 +57,7 @@ lambda_percent = 50.
 K = 5000
 
 X_true = np.zeros((n_features, n_times))
-# Active sources at indices 10 and 30
+# Active sources at indices 4 and 14
 X_true[4, :] = 1.
 X_true[14, :] = 1.
 
@@ -132,11 +132,12 @@ frequency = frequency[order]
 # Plot support frequencies in a colorful way
 C = unique_supports * np.arange(n_features, dtype=float)[np.newaxis, :]
 C[C == 0] = np.nan
-plt.matshow(C, cmap=plt.cm.spectral)
+plt.matshow(C, cmap=plt.cm.Set1)
 plt.xticks(range(20))
 plt.yticks(range(n_modes), ["%2.1f%%" % (100 * f,) for f in frequency])
 plt.ylabel("Support Freqency")
 plt.xlabel('Features')
 plt.grid('on', alpha=0.5)
 plt.gca().xaxis.set_ticks_position('bottom')
+plt.tight_layout()
 plt.show()
