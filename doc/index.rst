@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Documation of the bayes_mxne package
+Documentation of the bayes_mxne package
 ====================================
 
 Installation
